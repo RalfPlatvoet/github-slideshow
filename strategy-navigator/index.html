@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Strategy Nav">
+  <meta name="theme-color" content="#1B2A4A">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>PPI Strategy Navigator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B2A4A;
+      --navy-dark: #121e35;
+      --gold: #C9A84C;
+      --gold-light: #f5e9c6;
+      --gold-dim: #9e7e32;
+      --white: #fff;
+      --gray-50: #f8f9fa;
+      --gray-100: #f1f3f5;
+      --gray-200: #e9ecef;
+      --gray-400: #ced4da;
+      --gray-500: #adb5bd;
+      --gray-700: #495057;
+      --gray-900: #212529;
+      --header-h: 56px;
+      --tab-h: 64px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --cat-competitive: #1B2A4A;
+      --cat-resource: #1a6b52;
+      --cat-execution: #7a3b00;
+      --cat-innovation: #7c4d00;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      overscroll-behavior: none;
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-top: var(--safe-top);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    #header {
+      background: var(--navy);
+      color: var(--white);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    #header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--white);
+    }
+
+    #header .gold-dot {
+      color: var(--gold);
+      margin-right: 8px;
+    }
+
+    /* ── CONTENT AREA ── */
+    #content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      padding: 16px 16px 0;
+      display: none;
+    }
+
+    .screen.active { display: block; }
+
+    /* ── TAB BAR ── */
+    #tab-bar {
+      background: var(--navy);
+      height: calc(var(--tab-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      display: flex;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 4px;
+      min-height: 44px;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--gold);
+    }
+
+    .tab-btn svg { width: 22px; height: 22px; }
+
+    /* ── FRAMEWORK GRID ── */
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding-bottom: 16px;
+    }
+
+    .framework-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 16px 14px 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .framework-card:active {
+      transform: scale(0.97);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .framework-card.is-active::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--navy);
+    }
+
+    .card-desc {
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 7px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+
+    .badge-competitive { background: #e8edf5; color: var(--cat-competitive); }
+    .badge-resource    { background: #e0f2ec; color: var(--cat-resource); }
+    .badge-execution   { background: #fef0e0; color: var(--cat-execution); }
+    .badge-innovation  { background: #fef5e0; color: var(--cat-innovation); }
+
+    /* ── DETAIL SCREEN ── */
+    #detail {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+    }
+
+    #detail.open {
+      transform: translateX(0);
+    }
+
+    #detail-header {
+      background: var(--navy);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    #back-btn {
+      background: none;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #back-btn svg { width: 20px; height: 20px; }
+
+    #detail-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #detail-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 20px 0;
+    }
+
+    .detail-category {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .detail-description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--gray-700);
+      margin-bottom: 20px;
+    }
+
+    .detail-section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+
+    .key-questions {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .key-questions li {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--gray-700);
+      padding: 10px 14px 10px 36px;
+      position: relative;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .key-questions li::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 16px;
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    .notes-area {
+      margin-bottom: 20px;
+    }
+
+    .notes-area label {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .notes-textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.55;
+      color: var(--gray-900);
+      background: var(--white);
+      resize: vertical;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .notes-textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .notes-save-indicator {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 6px;
+      height: 16px;
+      transition: opacity 0.3s;
+    }
+
+    /* ── ACTIVE TOGGLE ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--gray-50);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .toggle-sub {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0; height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--gray-400);
+      border-radius: 28px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .toggle-slider::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 22px;
+      height: 22px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--gold);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::after {
+      transform: translateX(22px);
+    }
+
+    /* ── DETAIL FOOTER BUTTONS ── */
+    .detail-footer {
+      padding: 16px 20px calc(16px + var(--safe-bottom));
+      background: var(--white);
+      border-top: 1px solid var(--gray-100);
+      flex-shrink: 0;
+    }
+
+    .export-btn {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 52px;
+      transition: background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .export-btn:active { background: var(--navy-dark); }
+
+    .export-btn svg { width: 18px; height: 18px; }
+
+    /* ── MY ANALYSIS SCREEN ── */
+    .analysis-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .analysis-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .export-all-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 22px;
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      transition: background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .export-all-btn:active { background: var(--gold-dim); color: var(--white); }
+
+    .export-all-btn svg { width: 14px; height: 14px; }
+
+    .analysis-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s;
+    }
+
+    .analysis-card:active { transform: scale(0.98); }
+
+    .analysis-card-star {
+      color: var(--gold);
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .analysis-card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .analysis-card-notes {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .analysis-card-no-notes {
+      font-size: 12px;
+      color: var(--gray-500);
+      font-style: italic;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--gray-500);
+      line-height: 1.5;
+    }
+
+    /* ── SCREEN BOTTOM PADDING ── */
+    .screen-pad-bottom {
+      height: 16px;
+    }
+
+    /* ── LIBRARY HEADER ── */
+    .library-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--tab-h) + var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--navy);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── SCROLLBAR (desktop preview) ── */
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Main Header -->
+  <header id="header">
+    <h1><span class="gold-dot">◆</span>PPI Strategy Navigator</h1>
+  </header>
+
+  <!-- Screens -->
+  <main id="content">
+    <!-- Screen 1: Framework Library -->
+    <section id="screen-library" class="screen active">
+      <p class="library-heading">Framework Library</p>
+      <div class="framework-grid" id="framework-grid"></div>
+      <div class="screen-pad-bottom"></div>
+    </section>
+
+    <!-- Screen 3: My Analysis -->
+    <section id="screen-analysis" class="screen">
+      <div class="analysis-header">
+        <span class="analysis-title">My Analysis</span>
+        <button class="export-all-btn" id="export-all-btn" onclick="exportAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Export All
+        </button>
+      </div>
+      <div id="analysis-list"></div>
+      <div class="screen-pad-bottom"></div>
+    </section>
+  </main>
+
+  <!-- Tab Bar -->
+  <nav id="tab-bar">
+    <button class="tab-btn active" data-tab="library" onclick="switchTab('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Library
+    </button>
+    <button class="tab-btn" data-tab="analysis" onclick="switchTab('analysis')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+      My Analysis
+    </button>
+  </nav>
+
+  <!-- Detail Screen (slides from right) -->
+  <div id="detail">
+    <div id="detail-header">
+      <button id="back-btn" onclick="closeDetail()" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <span id="detail-title"></span>
+    </div>
+    <div id="detail-body">
+      <span id="detail-category-badge" class="detail-category"></span>
+      <p id="detail-description" class="detail-description"></p>
+      <p class="detail-section-title">Key Questions</p>
+      <ul id="detail-questions" class="key-questions"></ul>
+      <div class="toggle-row" id="active-toggle-row">
+        <div>
+          <div class="toggle-label">Mark as Active</div>
+          <div class="toggle-sub">Adds to My Analysis</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="active-toggle" onchange="toggleActive()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="notes-area">
+        <label for="notes-input">My Notes</label>
+        <textarea class="notes-textarea" id="notes-input"
+          placeholder="Add your analysis notes here…"
+          oninput="autoSaveNotes()"></textarea>
+        <div class="notes-save-indicator" id="save-indicator"></div>
+      </div>
+      <div class="screen-pad-bottom"></div>
+    </div>
+    <div class="detail-footer">
+      <button class="export-btn" onclick="exportFramework()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        Export Framework + Notes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const FRAMEWORKS = [
+  {
+    id: 'porters-five-forces',
+    name: "Porter's Five Forces",
+    shortDesc: "Analyzes competitive intensity and market attractiveness.",
+    category: "Competitive",
+    description: "Porter's Five Forces is a framework for analyzing the structural drivers of industry profitability. Developed by Michael Porter in 1979, it examines five key forces: competitive rivalry, threat of new entrants, bargaining power of suppliers, bargaining power of buyers, and threat of substitutes. By assessing each force, strategists understand where power lies in an industry. The model enables organizations to develop strategies that strengthen their long-term competitive position.",
+    keyQuestions: [
+      "How intense is the rivalry among existing competitors in this market?",
+      "How easy is it for new players to enter our industry?",
+      "How much power do our key suppliers hold over pricing and terms?",
+      "How much leverage do our customers have to push prices down?",
+      "What substitute products or services could draw customers away from us?"
+    ]
+  },
+  {
+    id: 'vrio',
+    name: "VRIO Analysis",
+    shortDesc: "Evaluates resources for sustainable competitive advantage.",
+    category: "Resource",
+    description: "VRIO Analysis evaluates a firm's resources and capabilities as potential sources of sustained competitive advantage. The acronym stands for Value, Rarity, Imitability, and Organization. A resource must be Valuable (exploiting opportunities or neutralizing threats), Rare (few competitors possess it), costly to Imitate, and the firm must be Organized to capture value from it. Only resources meeting all four criteria create sustainable competitive advantage rather than temporary gains.",
+    keyQuestions: [
+      "Does this resource add value by exploiting opportunities or neutralizing threats?",
+      "How many competitors currently possess this resource or capability?",
+      "How costly would it be for competitors to develop or acquire this resource?",
+      "Is the organization structured to fully exploit this resource's potential?",
+      "Which resources represent our true sources of sustainable competitive advantage?"
+    ]
+  },
+  {
+    id: 'balanced-scorecard',
+    name: "Balanced Scorecard",
+    shortDesc: "Aligns business activities to vision across four perspectives.",
+    category: "Execution",
+    description: "The Balanced Scorecard, introduced by Kaplan and Norton in 1992, translates an organization's vision and strategy into performance measures across four perspectives: Financial, Customer, Internal Business Processes, and Learning & Growth. This ensures organizations look beyond short-term financial results and invest in the capabilities needed for long-term success. It is widely used to communicate strategy, align departmental goals, and track strategic execution. The framework prevents organizations from optimizing one dimension at the expense of others.",
+    keyQuestions: [
+      "What financial objectives must we achieve to satisfy our shareholders?",
+      "How should we appear to our customers to achieve our vision?",
+      "Which internal processes must we excel at to satisfy customers and shareholders?",
+      "How must we learn and innovate to achieve our vision and sustain value creation?",
+      "Are our strategic initiatives and KPIs balanced across all four perspectives?"
+    ]
+  },
+  {
+    id: 'wardley-mapping',
+    name: "Wardley Mapping",
+    shortDesc: "Visualizes business landscape to guide strategic decisions.",
+    category: "Innovation",
+    description: "Wardley Mapping, developed by Simon Wardley, visualizes the strategic landscape by plotting value chain components along two axes: visibility to the user and evolutionary stage (genesis, custom, product, commodity). It helps organizations identify where to invest, what to build vs. buy, and where disruption is likely. By understanding how components evolve, leaders make better decisions about technology, outsourcing, and innovation bets. It is particularly powerful for technology strategy and digital transformation.",
+    keyQuestions: [
+      "What are the components in our value chain and how visible are they to users?",
+      "At what evolutionary stage is each component — novel, emerging, best practice, or commodity?",
+      "Where are the components in our value chain likely to commoditize next?",
+      "Which activities should we build internally vs. outsource or buy as a service?",
+      "Where are the greatest opportunities and threats in how our landscape is evolving?"
+    ]
+  },
+  {
+    id: 'business-model-canvas',
+    name: "Business Model Canvas",
+    shortDesc: "Maps all nine building blocks of a business on one page.",
+    category: "Innovation",
+    description: "The Business Model Canvas, created by Alexander Osterwalder, provides a visual framework for describing and challenging business models across nine building blocks: Key Partners, Key Activities, Key Resources, Value Propositions, Customer Relationships, Channels, Customer Segments, Cost Structure, and Revenue Streams. By mapping all elements together, teams gain a holistic view of how a business creates, delivers, and captures value. It is widely used for startup ideation, business model innovation, and competitive benchmarking. The canvas encourages systemic thinking about business design.",
+    keyQuestions: [
+      "What value do we create for our customers and which problems do we solve?",
+      "Who are our most important customer segments and how do we reach them?",
+      "What activities and resources are required to deliver our value proposition?",
+      "What are our most significant costs and what are our key revenue streams?",
+      "Which partnerships are critical to our business model's success?"
+    ]
+  },
+  {
+    id: 'mckinsey-7s',
+    name: "McKinsey 7-S",
+    shortDesc: "Examines seven internal factors for organizational alignment.",
+    category: "Execution",
+    description: "The McKinsey 7-S Framework posits that organizational effectiveness depends on the alignment of seven interrelated elements: Strategy, Structure, Systems, Shared Values, Skills, Style, and Staff. It distinguishes between 'hard' elements (Strategy, Structure, Systems), which are easier to define and manage, and 'soft' elements (Shared Values, Skills, Style, Staff), which are less tangible but equally critical. Misalignment between any two elements creates friction that undermines performance. It is particularly useful during organizational change, mergers, or strategy implementation.",
+    keyQuestions: [
+      "Is our organizational structure aligned with and supportive of our strategy?",
+      "Do our systems and processes enable or hinder our strategic objectives?",
+      "Are the skills of our workforce aligned with the capabilities our strategy requires?",
+      "Is our leadership style consistent with our culture and strategic goals?",
+      "Are our shared values coherent with all other elements and do they reinforce desired behaviors?"
+    ]
+  },
+  {
+    id: 'swot',
+    name: "SWOT Analysis",
+    shortDesc: "Identifies internal strengths/weaknesses and external opportunities/threats.",
+    category: "Competitive",
+    description: "SWOT Analysis examines an organization's internal Strengths and Weaknesses alongside external Opportunities and Threats. Internal factors relate to the organization's own resources, capabilities, and processes; external factors relate to the competitive environment and macro forces. The framework helps identify where to leverage advantages, where improvement is needed, which opportunities to pursue, and which threats to mitigate. A SWOT matrix can be extended into a TOWS analysis to systematically generate strategic options from the intersection of each quadrant.",
+    keyQuestions: [
+      "What internal capabilities and resources give us a competitive advantage?",
+      "What internal weaknesses or gaps put us at a disadvantage relative to competitors?",
+      "What external trends, market shifts, or unmet needs could we exploit?",
+      "What external competitive, regulatory, or market forces pose a risk to our business?",
+      "How can we use our strengths to capture opportunities and defend against threats?"
+    ]
+  },
+  {
+    id: 'ansoff',
+    name: "Ansoff Matrix",
+    shortDesc: "Maps four growth strategies across products and markets.",
+    category: "Innovation",
+    description: "The Ansoff Matrix, developed by H. Igor Ansoff in 1957, presents four growth strategies based on whether a company is operating with existing or new products in existing or new markets: Market Penetration, Market Development, Product Development, and Diversification. Each quadrant carries a different risk level, with Market Penetration being lowest risk and Diversification being highest. The framework helps leadership teams systematically evaluate their growth options and understand the risk-return tradeoff of each direction. It remains one of the most practical tools for strategic growth planning.",
+    keyQuestions: [
+      "What is our potential to grow by selling more of our existing products to current customers?",
+      "Which new geographic or demographic markets could we enter with our current products?",
+      "What new products or services could we develop for our existing customer base?",
+      "What diversification opportunities exist that leverage or expand our capabilities?",
+      "What is the risk-return tradeoff for each of the four growth strategy options?"
+    ]
+  },
+  {
+    id: 'blue-ocean',
+    name: "Blue Ocean Strategy",
+    shortDesc: "Creates uncontested market space by making competition irrelevant.",
+    category: "Innovation",
+    description: "Blue Ocean Strategy, by Kim and Mauborgne, advocates for creating entirely new market spaces ('blue oceans') where competition is irrelevant, rather than competing in contested markets ('red oceans'). It uses tools like the Strategy Canvas, the Four Actions Framework (Eliminate–Reduce–Raise–Create), and the Blue Ocean Idea Index to identify value innovation opportunities. By simultaneously pursuing differentiation and low cost, organizations can create new demand rather than fight over existing customers. The framework challenges leaders to question industry assumptions and redefine market boundaries.",
+    keyQuestions: [
+      "Which factors our industry competes on should be eliminated as they add no real value?",
+      "Which factors should be reduced well below the industry standard?",
+      "Which factors should be raised well above the industry standard?",
+      "Which factors should be created that the industry has never offered?",
+      "Where is the 'blue ocean' where we could create and capture uncontested market space?"
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentTab = 'library';
+let currentFrameworkId = null;
+let saveTimer = null;
+
+// ── STORAGE HELPERS ───────────────────────────────────────────────────────────
+function getNotes(id)    { return localStorage.getItem('notes_' + id) || ''; }
+function saveNotes(id, v){ localStorage.setItem('notes_' + id, v); }
+function isActive(id)    { return localStorage.getItem('active_' + id) === '1'; }
+function setActive(id, v){ localStorage.setItem('active_' + id, v ? '1' : '0'); }
+
+// ── TAB NAVIGATION ────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  if (currentTab === tab) return;
+  currentTab = tab;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  if (tab === 'analysis') renderAnalysis();
+}
+
+// ── LIBRARY RENDER ────────────────────────────────────────────────────────────
+function renderLibrary() {
+  const grid = document.getElementById('framework-grid');
+  grid.innerHTML = FRAMEWORKS.map(f => {
+    const active = isActive(f.id);
+    const catClass = 'badge-' + f.category.toLowerCase();
+    return `<div class="framework-card${active ? ' is-active' : ''}" onclick="openDetail('${f.id}')">
+      <span class="card-badge ${catClass}">${f.category}</span>
+      <span class="card-name">${f.name}</span>
+      <span class="card-desc">${f.shortDesc}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── DETAIL SCREEN ─────────────────────────────────────────────────────────────
+function openDetail(id) {
+  currentFrameworkId = id;
+  const f = FRAMEWORKS.find(x => x.id === id);
+  const catClass = 'badge-' + f.category.toLowerCase();
+
+  document.getElementById('detail-title').textContent = f.name;
+
+  const badge = document.getElementById('detail-category-badge');
+  badge.textContent = f.category;
+  badge.className = 'detail-category ' + catClass;
+
+  document.getElementById('detail-description').textContent = f.description;
+
+  const ul = document.getElementById('detail-questions');
+  ul.innerHTML = f.keyQuestions.map(q => `<li>${q}</li>`).join('');
+
+  document.getElementById('active-toggle').checked = isActive(id);
+  document.getElementById('notes-input').value = getNotes(id);
+  document.getElementById('save-indicator').textContent = '';
+
+  document.getElementById('detail').classList.add('open');
+  // prevent body scroll
+  document.getElementById('content').style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+  document.getElementById('content').style.overflow = '';
+  renderLibrary();
+  if (currentTab === 'analysis') renderAnalysis();
+}
+
+// ── NOTES AUTO-SAVE ───────────────────────────────────────────────────────────
+function autoSaveNotes() {
+  const val = document.getElementById('notes-input').value;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveNotes(currentFrameworkId, val);
+    const ind = document.getElementById('save-indicator');
+    ind.textContent = 'Saved';
+    setTimeout(() => { ind.textContent = ''; }, 1500);
+  }, 400);
+}
+
+// ── ACTIVE TOGGLE ─────────────────────────────────────────────────────────────
+function toggleActive() {
+  const checked = document.getElementById('active-toggle').checked;
+  setActive(currentFrameworkId, checked);
+}
+
+// ── EXPORT HELPERS ────────────────────────────────────────────────────────────
+function formatExport(f) {
+  const notes = getNotes(f.id);
+  const active = isActive(f.id) ? ' ★ Active' : '';
+  return `${f.name}${active}\n${notes || '(no notes)'}\n---`;
+}
+
+function buildFullExport() {
+  const date = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  const active = FRAMEWORKS.filter(f => isActive(f.id));
+  if (!active.length) return null;
+  const lines = [`PPI Strategy Navigator – Export ${date}`, ''];
+  active.forEach(f => { lines.push(formatExport(f)); lines.push(''); });
+  return lines.join('\n');
+}
+
+function share(text, title) {
+  if (navigator.share) {
+    navigator.share({ title, text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard')).catch(() => showToast('Export ready'));
+  }
+}
+
+function exportFramework() {
+  const f = FRAMEWORKS.find(x => x.id === currentFrameworkId);
+  const date = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  const text = `PPI Strategy Navigator – Export ${date}\n\n${formatExport(f)}`;
+  share(text, f.name + ' – PPI Strategy Navigator');
+}
+
+function exportAll() {
+  const text = buildFullExport();
+  if (!text) { showToast('No active frameworks yet'); return; }
+  share(text, 'PPI Strategy Navigator – Full Export');
+}
+
+// ── ANALYSIS SCREEN ───────────────────────────────────────────────────────────
+function renderAnalysis() {
+  const active = FRAMEWORKS.filter(f => isActive(f.id));
+  const list = document.getElementById('analysis-list');
+  const btn = document.getElementById('export-all-btn');
+
+  if (!active.length) {
+    btn.style.display = 'none';
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">◇</div>
+        <div class="empty-title">No Active Frameworks</div>
+        <div class="empty-sub">Open a framework in the Library and toggle "Mark as Active" to add it here.</div>
+      </div>`;
+    return;
+  }
+
+  btn.style.display = '';
+  list.innerHTML = active.map(f => {
+    const notes = getNotes(f.id);
+    const preview = notes.length > 100 ? notes.slice(0, 100) + '…' : notes;
+    const notesHtml = notes
+      ? `<div class="analysis-card-notes">${preview}</div>`
+      : `<div class="analysis-card-no-notes">No notes yet</div>`;
+    return `<div class="analysis-card" onclick="openDetail('${f.id}')">
+      <span class="analysis-card-star">★</span>
+      <div>
+        <div class="analysis-card-name">${f.name}</div>
+        ${notesHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderLibrary();
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/strategy-navigator/sw.js', { scope: '/strategy-navigator/' })
+      .catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
