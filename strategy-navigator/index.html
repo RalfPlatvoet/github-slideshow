@@ -754,6 +754,331 @@
       flex-shrink: 0;
     }
 
+    /* ── WORKFLOW PICKER ── */
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding-bottom: 16px;
+    }
+
+    .workflow-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 14px 13px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .workflow-card:active { transform: scale(0.97); }
+
+    .workflow-card-effort {
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-bottom: 5px;
+    }
+
+    .workflow-card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      line-height: 1.25;
+      margin-bottom: 5px;
+    }
+
+    .workflow-card-desc {
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1.4;
+    }
+
+    .workflow-card-steps {
+      display: flex;
+      gap: 3px;
+      margin-top: 10px;
+    }
+
+    .wf-step-pip {
+      height: 3px;
+      flex: 1;
+      border-radius: 2px;
+      background: var(--gray-200);
+    }
+
+    /* ── WORKFLOW DETAIL OVERLAY ── */
+    #workflow-detail {
+      position: fixed;
+      inset: 0;
+      background: var(--gray-50);
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+    }
+
+    #workflow-detail.open { transform: translateX(0); }
+
+    #workflow-detail-header {
+      background: var(--navy);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    #workflow-detail-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      flex: 1;
+    }
+
+    #workflow-detail-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px 0;
+    }
+
+    /* ── WORKFLOW STEPPER ── */
+    .wf-step {
+      display: flex;
+      gap: 14px;
+    }
+
+    .wf-step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .wf-step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .wf-step-circle.done { background: #1a6b52; }
+
+    .wf-step-line {
+      width: 2px;
+      flex: 1;
+      min-height: 16px;
+      background: var(--gray-200);
+      margin: 4px 0;
+    }
+
+    .wf-step-content {
+      flex: 1;
+      padding-bottom: 22px;
+      min-width: 0;
+    }
+
+    .wf-step-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 7px 0 10px;
+    }
+
+    .wf-step-io {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 8px;
+    }
+
+    .wf-step-io-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+    }
+
+    .wf-step-io-text {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .wf-open-btn {
+      width: 100%;
+      background: var(--gold-light);
+      color: var(--navy);
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wf-open-btn:active { background: var(--gold); }
+
+    /* ── NETWORK SCREEN ── */
+    #screen-network { padding: 0; }
+
+    #net-container {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .net-legend {
+      display: flex;
+      gap: 14px;
+      padding: 8px 16px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .net-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--gray-700);
+      white-space: nowrap;
+    }
+
+    .net-legend-line {
+      width: 14px;
+      height: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    #net-svg-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #net-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── NETWORK INFO PANEL ── */
+    #net-info {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      padding: 16px 20px calc(16px + var(--safe-bottom));
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 150;
+      max-height: 58vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #net-info.open { transform: translateY(0); }
+
+    .net-info-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--gray-200);
+      border-radius: 2px;
+      margin: 0 auto 14px;
+    }
+
+    .net-info-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 6px 0 8px;
+    }
+
+    .net-info-desc {
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .net-info-rels {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+
+    .net-info-rel {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.4;
+    }
+
+    .net-info-open {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 50px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .net-info-open:active { background: var(--navy-dark); }
+
+    /* ── SHARED BACK BUTTON ── */
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* ── SCROLLBAR (desktop preview) ── */
     ::-webkit-scrollbar { width: 0; }
   </style>
@@ -774,7 +1099,29 @@
       <div class="screen-pad-bottom"></div>
     </section>
 
-    <!-- Screen 3: My Analysis -->
+    <!-- Screen 2: Guided Workflow -->
+    <section id="screen-workflow" class="screen">
+      <p class="library-heading">Guided Workflow</p>
+      <div class="workflow-grid" id="workflow-grid"></div>
+      <div class="screen-pad-bottom"></div>
+    </section>
+
+    <!-- Screen 3: Framework Network -->
+    <section id="screen-network" class="screen">
+      <div id="net-container">
+        <div class="net-legend">
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#1a6b52"></span>Leads to</span>
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#1B5296"></span>Pair with</span>
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#7b5fa8"></span>Validates</span>
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#c47b2a"></span>Contrasts</span>
+        </div>
+        <div id="net-svg-wrap">
+          <svg id="net-svg" viewBox="0 0 360 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 4: My Analysis -->
     <section id="screen-analysis" class="screen">
       <div class="analysis-header">
         <span class="analysis-title">My Analysis</span>
@@ -797,15 +1144,42 @@
       </svg>
       Library
     </button>
+    <button class="tab-btn" data-tab="workflow" onclick="switchTab('workflow')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="11"/>
+        <circle cx="12" cy="12" r="2"/><line x1="12" y1="14" x2="12" y2="18"/>
+        <circle cx="12" cy="19" r="2"/>
+      </svg>
+      Workflow
+    </button>
+    <button class="tab-btn" data-tab="network" onclick="switchTab('network')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="5" r="2.5"/><circle cx="4" cy="19" r="2.5"/><circle cx="20" cy="19" r="2.5"/>
+        <line x1="12" y1="7.5" x2="4" y2="16.5"/><line x1="12" y1="7.5" x2="20" y2="16.5"/>
+        <line x1="6.5" y1="19" x2="17.5" y2="19"/>
+      </svg>
+      Network
+    </button>
     <button class="tab-btn" data-tab="analysis" onclick="switchTab('analysis')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
       </svg>
-      My Analysis
+      Analysis
     </button>
   </nav>
 
-  <!-- Detail Screen (slides from right) -->
+  <!-- Workflow Detail Overlay (slides from right) -->
+  <div id="workflow-detail">
+    <div id="workflow-detail-header">
+      <button class="back-btn" onclick="closeWorkflow()" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span id="workflow-detail-title"></span>
+    </div>
+    <div id="workflow-detail-body"></div>
+  </div>
+
+  <!-- Framework Detail Screen (slides from right) -->
   <div id="detail">
     <div id="detail-header">
       <button id="back-btn" onclick="closeDetail()" aria-label="Back">
@@ -853,6 +1227,16 @@
       </button>
     </div>
   </div>
+</div>
+
+<!-- Network Node Info Panel -->
+<div id="net-info">
+  <div class="net-info-handle"></div>
+  <span id="net-info-badge" class="detail-category"></span>
+  <div id="net-info-name" class="net-info-name"></div>
+  <div id="net-info-desc" class="net-info-desc"></div>
+  <div id="net-info-rels" class="net-info-rels"></div>
+  <button class="net-info-open" onclick="openDetailFromNetwork()">Open Framework</button>
 </div>
 
 <!-- Toast -->
@@ -1169,6 +1553,151 @@ const FRAMEWORKS = [
   }
 ];
 
+// ── WORKFLOWS ────────────────────────────────────────────────────────────────
+const WORKFLOWS = [
+  {
+    id: 'market-entry',
+    name: 'Market Entry',
+    description: 'Assess a new market and define your entry strategy.',
+    effort: '2–3 days',
+    steps: [
+      { frameworkId: 'porters-five-forces',
+        input:  'A clearly scoped industry definition and available market data.',
+        output: 'Force ratings, attractiveness score, and the key structural risk factors.' },
+      { frameworkId: 'swot',
+        input:  "Porter's outputs: external threats and opportunities already identified.",
+        output: 'Prioritized S/W/O/T list — ready to extend into a TOWS options matrix.' },
+      { frameworkId: 'ansoff',
+        input:  'SWOT findings: where your strengths best align with identified opportunities.',
+        output: 'Chosen growth quadrant (e.g., Market Development) with risk/return rationale.' },
+      { frameworkId: 'business-model-canvas',
+        input:  'Ansoff output: the target market, product/service, and chosen risk posture.',
+        output: 'Full business model for the chosen entry strategy — ready for financial modeling.' }
+    ]
+  },
+  {
+    id: 'competitive-strategy',
+    name: 'Competitive Strategy',
+    description: 'Understand competitive dynamics and define a winning market position.',
+    effort: '2–4 days',
+    steps: [
+      { frameworkId: 'porters-five-forces',
+        input:  'The competitive arena and intended scope of the analysis.',
+        output: 'Assessment of competitive intensity and attractiveness of the current position.' },
+      { frameworkId: 'swot',
+        input:  "Porter's outputs enrich the O/T quadrants with specific force-based insights.",
+        output: 'Full situational picture linking internal capabilities to external competitive forces.' },
+      { frameworkId: 'vrio',
+        input:  'SWOT strengths: which are genuinely rare, inimitable, and already being exploited?',
+        output: 'Prioritized list of true sources of sustainable competitive advantage.' },
+      { frameworkId: 'blue-ocean',
+        input:  'VRIO output: where you have unique, hard-to-copy strengths to anchor innovation.',
+        output: 'Strategy canvas + ERRC grid defining a differentiated competitive position.' }
+    ]
+  },
+  {
+    id: 'org-transformation',
+    name: 'Org. Transformation',
+    description: 'Diagnose alignment gaps and build a path to successful change.',
+    effort: '3–5 days',
+    steps: [
+      { frameworkId: 'mckinsey-7s',
+        input:  'The target strategy and an honest assessment of the current organizational state.',
+        output: 'Alignment diagnostic: which of the 7 elements are misaligned with the strategy?' },
+      { frameworkId: 'vrio',
+        input:  '7-S output: which resources and capabilities underpin or hinder the transformation.',
+        output: 'Resource roadmap: what to protect, build, or divest during the change.' },
+      { frameworkId: 'balanced-scorecard',
+        input:  'Transformation goals and VRIO capability drivers for each BSC perspective.',
+        output: 'Transformation scorecard: measurable targets across all four perspectives.' }
+    ]
+  },
+  {
+    id: 'ma-integration',
+    name: 'M&A Integration',
+    description: 'Evaluate a target and design a value-capturing integration plan.',
+    effort: '4–6 days',
+    steps: [
+      { frameworkId: 'porters-five-forces',
+        input:  'The target company and its industry scope.',
+        output: 'Industry attractiveness of the target market and key structural risks.' },
+      { frameworkId: 'vrio',
+        input:  "Target's resources: what do they have that we don't — and is it truly strategic?",
+        output: 'Assessment of which target assets represent genuine, sustainable strategic value.' },
+      { frameworkId: 'mckinsey-7s',
+        input:  'Both organizations\' 7-S profiles to identify integration friction points.',
+        output: 'Integration roadmap: where alignment is easy vs. where cultural clashes are likely.' },
+      { frameworkId: 'balanced-scorecard',
+        input:  'Integration goals and the combined entity\'s strategic ambitions.',
+        output: 'Joint scorecard for the merged organization tracking synergy realization.' }
+    ]
+  },
+  {
+    id: 'biz-model-innovation',
+    name: 'Business Model Innovation',
+    description: 'Challenge your existing model and design a compelling new one.',
+    effort: '3–5 days',
+    steps: [
+      { frameworkId: 'blue-ocean',
+        input:  'Current business context and the competitive space you want to escape or reshape.',
+        output: 'ERRC grid and strategy canvas defining the new value innovation direction.' },
+      { frameworkId: 'business-model-canvas',
+        input:  'Blue Ocean output: new value proposition, target customer, and pricing logic.',
+        output: 'Complete new business model mapped across all nine building blocks.' },
+      { frameworkId: 'wardley-mapping',
+        input:  'New BMC: which key activities and resources does the new model depend on?',
+        output: 'Landscape map showing which components to build, buy, or outsource.' }
+    ]
+  },
+  {
+    id: 'tech-strategy',
+    name: 'Technology Strategy',
+    description: 'Map your technology landscape and inform build vs. buy decisions.',
+    effort: '3–4 days',
+    steps: [
+      { frameworkId: 'wardley-mapping',
+        input:  'User needs and the technology components required to serve them.',
+        output: 'Landscape map showing evolutionary stage of all key technology components.' },
+      { frameworkId: 'vrio',
+        input:  'Wardley output: which components in Genesis or Custom-Built phases are truly strategic?',
+        output: 'Identification of which technology bets represent real competitive differentiators.' },
+      { frameworkId: 'business-model-canvas',
+        input:  'VRIO output: what to build internally vs. buy — and what that means for the model.',
+        output: 'Technology-informed business model with clear Key Resources and Activities.' },
+      { frameworkId: 'balanced-scorecard',
+        input:  'Business model and strategic technology priorities from previous steps.',
+        output: 'Technology strategy scorecard with KPIs across all four BSC perspectives.' }
+    ]
+  }
+];
+
+// ── NETWORK NODE POSITIONS ────────────────────────────────────────────────────
+const NET_POS = {
+  'vrio':                  { cx: 180, cy: 85,  label: ['VRIO'] },
+  'mckinsey-7s':           { cx: 261, cy: 119, label: ['McKinsey', '7-S'] },
+  'balanced-scorecard':    { cx: 295, cy: 200, label: ['Balanced', 'Score.'] },
+  'business-model-canvas': { cx: 261, cy: 281, label: ['BM', 'Canvas'] },
+  'ansoff':                { cx: 180, cy: 315, label: ['Ansoff'] },
+  'blue-ocean':            { cx: 99,  cy: 281, label: ['Blue', 'Ocean'] },
+  'swot':                  { cx: 65,  cy: 200, label: ['SWOT'] },
+  'porters-five-forces':   { cx: 99,  cy: 119, label: ["Porter's"] },
+  'wardley-mapping':       { cx: 180, cy: 200, label: ['Wardley'] }
+};
+
+const CAT_COLORS = {
+  Competitive: { fill: '#e8edf5', stroke: '#1B2A4A', text: '#1B2A4A' },
+  Resource:    { fill: '#dff2ea', stroke: '#1a6b52', text: '#1a6b52' },
+  Execution:   { fill: '#fef0e0', stroke: '#7a3b00', text: '#7a3b00' },
+  Innovation:  { fill: '#f0ecf8', stroke: '#5c3b8a', text: '#5c3b8a' }
+};
+
+const EDGE_COLORS = {
+  PRECEDES:  '#1a6b52',
+  COMBINES:  '#1B5296',
+  VALIDATES: '#7b5fa8',
+  CONTRASTS: '#c47b2a'
+};
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentTab = 'library';
 let currentFrameworkId = null;
@@ -1190,6 +1719,8 @@ function switchTab(tab) {
     b.classList.toggle('active', b.dataset.tab === tab);
   });
   if (tab === 'analysis') renderAnalysis();
+  if (tab === 'workflow') renderWorkflowPicker();
+  if (tab === 'network')  initNetwork();
 }
 
 // ── LIBRARY RENDER ────────────────────────────────────────────────────────────
@@ -1297,6 +1828,244 @@ function closeDetail() {
   document.getElementById('content').style.overflow = '';
   renderLibrary();
   if (currentTab === 'analysis') renderAnalysis();
+  if (currentTab === 'workflow') renderWorkflowPicker();
+}
+
+// ── WORKFLOW FUNCTIONS ────────────────────────────────────────────────────────
+function renderWorkflowPicker() {
+  const grid = document.getElementById('workflow-grid');
+  grid.innerHTML = WORKFLOWS.map(w => {
+    const done = w.steps.filter(s => getNotes(s.frameworkId)).length;
+    return `<div class="workflow-card" onclick="openWorkflow('${w.id}')">
+      <div class="workflow-card-effort">${w.steps.length} frameworks · ${w.effort}</div>
+      <div class="workflow-card-name">${w.name}</div>
+      <div class="workflow-card-desc">${w.description}</div>
+      <div class="workflow-card-steps">
+        ${w.steps.map((s, i) => `<div class="wf-step-pip" style="background:${i < done ? 'var(--gold)' : 'var(--gray-200)'}"></div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openWorkflow(id) {
+  const w = WORKFLOWS.find(x => x.id === id);
+  document.getElementById('workflow-detail-title').textContent = w.name;
+  const body = document.getElementById('workflow-detail-body');
+  body.innerHTML = `
+    <p style="font-size:13px;color:var(--gray-700);line-height:1.55;margin-bottom:20px">${w.description} Estimated effort: <strong>${w.effort}</strong>.</p>
+    ${w.steps.map((step, i) => {
+      const f = FRAMEWORKS.find(x => x.id === step.frameworkId);
+      const hasNotes = !!getNotes(f.id);
+      const catClass = 'badge-' + f.category.toLowerCase();
+      const isLast = i === w.steps.length - 1;
+      return `<div class="wf-step">
+        <div class="wf-step-left">
+          <div class="wf-step-circle${hasNotes ? ' done' : ''}">${hasNotes ? '✓' : i + 1}</div>
+          ${!isLast ? '<div class="wf-step-line"></div>' : ''}
+        </div>
+        <div class="wf-step-content">
+          <span class="card-badge ${catClass}" style="display:inline-block">${f.category}</span>
+          <div class="wf-step-name">${f.name}</div>
+          <div class="wf-step-io">
+            <div class="wf-step-io-label">Input needed</div>
+            <div class="wf-step-io-text">${step.input}</div>
+          </div>
+          <div class="wf-step-io">
+            <div class="wf-step-io-label">Output produced</div>
+            <div class="wf-step-io-text">${step.output}</div>
+          </div>
+          <button class="wf-open-btn" onclick="openDetailFromWorkflow('${f.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            Open Framework
+          </button>
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="screen-pad-bottom"></div>`;
+  body.scrollTop = 0;
+  document.getElementById('workflow-detail').classList.add('open');
+}
+
+function closeWorkflow() {
+  document.getElementById('workflow-detail').classList.remove('open');
+}
+
+function openDetailFromWorkflow(frameworkId) {
+  document.getElementById('workflow-detail').classList.remove('open');
+  setTimeout(() => openDetail(frameworkId), 320);
+}
+
+// ── NETWORK FUNCTIONS ─────────────────────────────────────────────────────────
+let networkReady = false;
+let netActiveId = null;
+
+function buildEdges() {
+  const edges = [], seen = new Set();
+  FRAMEWORKS.forEach(f => {
+    (f.relations || []).forEach(r => {
+      const key = [f.id, r.id].sort().join('|');
+      if (!seen.has(key)) { seen.add(key); edges.push({ from: f.id, to: r.id, type: r.type }); }
+    });
+  });
+  return edges;
+}
+
+function initNetwork() {
+  if (networkReady) return;
+  networkReady = true;
+
+  const svg = document.getElementById('net-svg');
+  const NS  = 'http://www.w3.org/2000/svg';
+  const R   = 30;
+
+  function el(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    return e;
+  }
+
+  // Edges
+  const eGroup = el('g', { id: 'net-edges' });
+  buildEdges().forEach(edge => {
+    const a = NET_POS[edge.from], b = NET_POS[edge.to];
+    if (!a || !b) return;
+    const dx = b.cx - a.cx, dy = b.cy - a.cy, d = Math.sqrt(dx*dx + dy*dy);
+    const ux = dx/d, uy = dy/d;
+    const line = el('line', {
+      x1: a.cx + ux*R, y1: a.cy + uy*R,
+      x2: b.cx - ux*R, y2: b.cy - uy*R,
+      stroke: EDGE_COLORS[edge.type], 'stroke-width': '2',
+      'stroke-linecap': 'round', opacity: '0.45',
+      'data-from': edge.from, 'data-to': edge.to, 'data-type': edge.type
+    });
+    eGroup.appendChild(line);
+  });
+  svg.appendChild(eGroup);
+
+  // Nodes
+  const nGroup = el('g', { id: 'net-nodes' });
+  FRAMEWORKS.forEach(f => {
+    const pos = NET_POS[f.id];
+    if (!pos) return;
+    const col = CAT_COLORS[f.category];
+    const g = el('g', { 'data-id': f.id, cursor: 'pointer' });
+
+    g.appendChild(el('circle', {
+      cx: pos.cx, cy: pos.cy, r: R,
+      fill: col.fill, stroke: col.stroke, 'stroke-width': '2'
+    }));
+
+    const lines = pos.label;
+    const lineH = 11;
+    const startY = pos.cy - ((lines.length - 1) * lineH) / 2;
+    lines.forEach((txt, i) => {
+      const t = el('text', {
+        x: pos.cx, y: startY + i * lineH,
+        'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        fill: col.text, 'font-size': '9', 'font-weight': '700',
+        'font-family': 'system-ui,sans-serif', 'pointer-events': 'none'
+      });
+      t.textContent = txt;
+      g.appendChild(t);
+    });
+
+    g.addEventListener('click', e => { e.stopPropagation(); selectNetNode(f.id); });
+    g.addEventListener('touchend', e => { e.preventDefault(); e.stopPropagation(); selectNetNode(f.id); });
+    nGroup.appendChild(g);
+  });
+  svg.appendChild(nGroup);
+
+  svg.addEventListener('click', () => clearNetworkSelection());
+}
+
+function selectNetNode(id) {
+  netActiveId = id;
+  const svg = document.getElementById('net-svg');
+
+  const connected = new Set();
+  FRAMEWORKS.forEach(f => {
+    (f.relations || []).forEach(r => {
+      if (f.id === id) connected.add(r.id);
+      if (r.id === id) connected.add(f.id);
+    });
+  });
+
+  svg.querySelectorAll('#net-nodes g').forEach(g => {
+    const nid = g.dataset.id;
+    const f = FRAMEWORKS.find(x => x.id === nid);
+    const col = CAT_COLORS[f.category];
+    const circle = g.querySelector('circle');
+    if (nid === id) {
+      circle.setAttribute('fill', '#C9A84C');
+      circle.setAttribute('stroke', '#1B2A4A');
+      circle.setAttribute('stroke-width', '3');
+      g.querySelectorAll('text').forEach(t => t.setAttribute('fill', '#1B2A4A'));
+      g.setAttribute('opacity', '1');
+    } else if (connected.has(nid)) {
+      circle.setAttribute('fill', col.fill);
+      circle.setAttribute('stroke', col.stroke);
+      circle.setAttribute('stroke-width', '2.5');
+      g.querySelectorAll('text').forEach(t => t.setAttribute('fill', col.text));
+      g.setAttribute('opacity', '1');
+    } else {
+      circle.setAttribute('fill', col.fill);
+      circle.setAttribute('stroke', col.stroke);
+      circle.setAttribute('stroke-width', '1.5');
+      g.querySelectorAll('text').forEach(t => t.setAttribute('fill', col.text));
+      g.setAttribute('opacity', '0.2');
+    }
+  });
+
+  svg.querySelectorAll('#net-edges line').forEach(line => {
+    const isConnected = line.dataset.from === id || line.dataset.to === id;
+    line.setAttribute('stroke-width', isConnected ? '2.5' : '1.5');
+    line.setAttribute('opacity',      isConnected ? '0.9'  : '0.06');
+  });
+
+  const f = FRAMEWORKS.find(x => x.id === id);
+  const badge = document.getElementById('net-info-badge');
+  badge.textContent = f.category;
+  badge.className = 'detail-category badge-' + f.category.toLowerCase();
+  document.getElementById('net-info-name').textContent = f.name;
+  document.getElementById('net-info-desc').textContent = f.shortDesc + ' ' + f.description.slice(0, f.description.indexOf('.', 40) + 1);
+
+  document.getElementById('net-info-rels').innerHTML = (f.relations || []).map(r => {
+    const rf = FRAMEWORKS.find(x => x.id === r.id);
+    return `<div class="net-info-rel">
+      <span class="rel-badge rel-${r.type}">${REL_LABELS[r.type]}</span>
+      <span>${rf.name} — ${r.note}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('net-info').classList.add('open');
+}
+
+function clearNetworkSelection() {
+  netActiveId = null;
+  const svg = document.getElementById('net-svg');
+  svg.querySelectorAll('#net-nodes g').forEach(g => {
+    const f = FRAMEWORKS.find(x => x.id === g.dataset.id);
+    if (!f) return;
+    const col = CAT_COLORS[f.category];
+    const circle = g.querySelector('circle');
+    circle.setAttribute('fill', col.fill);
+    circle.setAttribute('stroke', col.stroke);
+    circle.setAttribute('stroke-width', '2');
+    g.querySelectorAll('text').forEach(t => t.setAttribute('fill', col.text));
+    g.setAttribute('opacity', '1');
+  });
+  svg.querySelectorAll('#net-edges line').forEach(line => {
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('opacity', '0.45');
+  });
+  document.getElementById('net-info').classList.remove('open');
+}
+
+function openDetailFromNetwork() {
+  if (!netActiveId) return;
+  const id = netActiveId;
+  document.getElementById('net-info').classList.remove('open');
+  setTimeout(() => openDetail(id), 200);
 }
 
 // ── NOTES AUTO-SAVE ───────────────────────────────────────────────────────────
