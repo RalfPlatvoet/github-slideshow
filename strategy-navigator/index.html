@@ -610,6 +610,150 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    /* ── META ROW ── */
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .meta-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1;
+    }
+
+    .meta-pill-label {
+      color: var(--gray-500);
+      font-size: 10px;
+    }
+
+    .meta-pill-dot {
+      width: 3px; height: 3px;
+      background: var(--gray-400);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .time-quick  { border-color: #b8e0cb; background: #eef7f0; color: #1a6b52; }
+    .time-medium { border-color: #f5dba0; background: #fef8ec; color: #7c4d00; }
+    .time-deep   { border-color: #c5b8d8; background: #f5f0fb; color: #5c3b8a; }
+
+    /* ── CONTEXT SECTION ── */
+    .context-section { margin-bottom: 24px; }
+
+    .context-block {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+
+    .context-block-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 5px;
+    }
+
+    .context-block-text {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--gray-700);
+    }
+
+    .context-when    { background: #eef7f0; }
+    .context-when    .context-block-title { color: #1a6b52; }
+    .context-whennot { background: #fef5e8; }
+    .context-whennot .context-block-title { color: #7a3b00; }
+    .context-pitfalls { background: var(--gray-50); border: 1px solid var(--gray-200); }
+    .context-pitfalls .context-block-title { color: var(--navy); }
+
+    .pitfall-item {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+      padding-left: 14px;
+      position: relative;
+      margin-top: 6px;
+    }
+
+    .pitfall-item::before {
+      content: '!';
+      position: absolute;
+      left: 0;
+      font-weight: 800;
+      color: var(--gold-dim);
+      font-size: 11px;
+    }
+
+    /* ── RELATED FRAMEWORKS ── */
+    .related-section { margin-bottom: 24px; }
+
+    .related-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .related-card:active {
+      background: var(--gray-50);
+      border-color: var(--gold);
+    }
+
+    .rel-badge {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .rel-PRECEDES  { background: #e0f2ec; color: #1a6b52; }
+    .rel-COMBINES  { background: #e8edf5; color: var(--navy); }
+    .rel-VALIDATES { background: #f3eef9; color: #5c3b8a; }
+    .rel-CONTRASTS { background: #fef0e0; color: #7a3b00; }
+
+    .related-card-body { flex: 1; min-width: 0; }
+
+    .related-card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+
+    .related-card-note {
+      font-size: 11px;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+
+    .related-card-chevron {
+      color: var(--gray-400);
+      flex-shrink: 0;
+    }
+
     /* ── SCROLLBAR (desktop preview) ── */
     ::-webkit-scrollbar { width: 0; }
   </style>
@@ -673,9 +817,12 @@
     </div>
     <div id="detail-body">
       <span id="detail-category-badge" class="detail-category"></span>
+      <div id="detail-meta" class="meta-row"></div>
       <p id="detail-description" class="detail-description"></p>
+      <div id="detail-context" class="context-section"></div>
       <p class="detail-section-title">Key Questions</p>
       <ul id="detail-questions" class="key-questions"></ul>
+      <div id="detail-related" class="related-section"></div>
       <div class="toggle-row" id="active-toggle-row">
         <div>
           <div class="toggle-label">Mark as Active</div>
@@ -726,6 +873,26 @@ const FRAMEWORKS = [
       "How much power do our key suppliers hold over pricing and terms?",
       "How much leverage do our customers have to push prices down?",
       "What substitute products or services could draw customers away from us?"
+    ],
+    meta: {
+      origin: { author: 'Michael E. Porter', year: 1979 },
+      timeToApply: 'medium',
+      outputType: 'Five-axis matrix',
+      projectTypes: ['Market entry', 'Competitive analysis', 'M&A due diligence']
+    },
+    context: {
+      whenToUse: "When assessing the long-term attractiveness of an industry or evaluating a new market to enter.",
+      whenNotToUse: "When operational decisions need to be made quickly — it addresses structural, not tactical, issues.",
+      pitfalls: [
+        "Defining the industry too broadly or too narrowly distorts all five forces.",
+        "Treating it as a one-time snapshot rather than a dynamic, recurring analysis.",
+        "Ignoring interdependencies — a change in one force typically shifts others."
+      ]
+    },
+    relations: [
+      { id: 'swot',       type: 'PRECEDES',  note: 'Industry forces inform the external Opportunities & Threats in SWOT.' },
+      { id: 'blue-ocean', type: 'PRECEDES',  note: 'Understanding red-ocean intensity is the starting point for Blue Ocean.' },
+      { id: 'vrio',       type: 'VALIDATES', note: 'Which internal resources protect against which competitive forces?' }
     ]
   },
   {
@@ -740,6 +907,26 @@ const FRAMEWORKS = [
       "How costly would it be for competitors to develop or acquire this resource?",
       "Is the organization structured to fully exploit this resource's potential?",
       "Which resources represent our true sources of sustainable competitive advantage?"
+    ],
+    meta: {
+      origin: { author: 'Jay B. Barney', year: 1991 },
+      timeToApply: 'medium',
+      outputType: 'Resource evaluation table',
+      projectTypes: ['Capability assessment', 'Post-merger integration', 'Strategy formulation']
+    },
+    context: {
+      whenToUse: "When identifying which internal resources and capabilities are genuinely strategic and worth protecting or investing in.",
+      whenNotToUse: "Not useful for analyzing external market dynamics — always pair with an external framework like Porter's Five Forces.",
+      pitfalls: [
+        "Confusing 'valuable' with 'rare' — a resource can be valuable but still easily replicated.",
+        "Underestimating the 'Organization' criterion — even rare, inimitable resources create no advantage if the firm can't exploit them.",
+        "Static analysis — VRIO must be revisited regularly as the competitive landscape evolves."
+      ]
+    },
+    relations: [
+      { id: 'porters-five-forces', type: 'VALIDATES', note: 'Assess which resources withstand each of the five competitive forces.' },
+      { id: 'mckinsey-7s',         type: 'COMBINES',  note: 'VRIO identifies what is strategic; 7-S explains how the organization leverages it.' },
+      { id: 'balanced-scorecard',  type: 'PRECEDES',  note: 'Strategic resources become the capability drivers in BSC perspectives.' }
     ]
   },
   {
@@ -754,6 +941,26 @@ const FRAMEWORKS = [
       "Which internal processes must we excel at to satisfy customers and shareholders?",
       "How must we learn and innovate to achieve our vision and sustain value creation?",
       "Are our strategic initiatives and KPIs balanced across all four perspectives?"
+    ],
+    meta: {
+      origin: { author: 'Kaplan & Norton', year: 1992 },
+      timeToApply: 'deep',
+      outputType: 'Four-perspective scorecard',
+      projectTypes: ['Strategy implementation', 'Performance management', 'Organizational alignment']
+    },
+    context: {
+      whenToUse: "When translating a defined strategy into measurable targets and cascading them across the organization.",
+      whenNotToUse: "Not a strategy formulation tool — it implements strategy, it does not create it. Define strategy first.",
+      pitfalls: [
+        "Too many KPIs dilute focus — 20–25 measures maximum across all four perspectives.",
+        "Treating it as a reporting dashboard rather than an active management tool.",
+        "Failing to establish causal links between perspectives: Learning drives Process, which drives Customer, which drives Financial."
+      ]
+    },
+    relations: [
+      { id: 'mckinsey-7s',          type: 'VALIDATES', note: 'Confirm organizational alignment across all 7-S elements before setting BSC targets.' },
+      { id: 'vrio',                  type: 'COMBINES',  note: 'Strategic resources directly drive the Learning & Growth perspective metrics.' },
+      { id: 'business-model-canvas', type: 'COMBINES',  note: 'The business model defines which performance dimensions the BSC should track.' }
     ]
   },
   {
@@ -768,6 +975,26 @@ const FRAMEWORKS = [
       "Where are the components in our value chain likely to commoditize next?",
       "Which activities should we build internally vs. outsource or buy as a service?",
       "Where are the greatest opportunities and threats in how our landscape is evolving?"
+    ],
+    meta: {
+      origin: { author: 'Simon Wardley', year: 2005 },
+      timeToApply: 'deep',
+      outputType: 'Landscape map',
+      projectTypes: ['Technology strategy', 'Digital transformation', 'Build vs. buy decisions']
+    },
+    context: {
+      whenToUse: "When making investment or build-vs-buy decisions in technology-intensive or rapidly evolving markets.",
+      whenNotToUse: "Less relevant for stable, low-tech industries where components evolve slowly.",
+      pitfalls: [
+        "Spending too long on map perfection — a rough, directionally correct map beats a precise but contested one.",
+        "Mapping at the wrong granularity — too detailed creates noise; too high-level misses actionable insights.",
+        "Forgetting the user anchor — the map must always start from explicit user needs, not internal assumptions."
+      ]
+    },
+    relations: [
+      { id: 'business-model-canvas', type: 'COMBINES',  note: 'Wardley reveals which BMC components are evolving toward commodity.' },
+      { id: 'porters-five-forces',   type: 'COMBINES',  note: 'Map the landscape first, then analyze competitive forces within it.' },
+      { id: 'vrio',                  type: 'VALIDATES', note: 'Which mapped components are truly inimitable vs. on the path to commodity?' }
     ]
   },
   {
@@ -782,6 +1009,26 @@ const FRAMEWORKS = [
       "What activities and resources are required to deliver our value proposition?",
       "What are our most significant costs and what are our key revenue streams?",
       "Which partnerships are critical to our business model's success?"
+    ],
+    meta: {
+      origin: { author: 'Alexander Osterwalder', year: 2008 },
+      timeToApply: 'medium',
+      outputType: 'Nine-block canvas',
+      projectTypes: ['Business model design', 'Innovation', 'Competitive benchmarking']
+    },
+    context: {
+      whenToUse: "When designing a new business model, stress-testing an existing one, or benchmarking against a competitor's model.",
+      whenNotToUse: "Not a substitute for financial modeling — always complement with detailed P&L projections.",
+      pitfalls: [
+        "Filling in the canvas in isolation rather than iterating with real customer evidence.",
+        "Treating the nine blocks as independent — changing one block cascades through all others.",
+        "Over-specifying the canvas before validating core assumptions with actual customers or partners."
+      ]
+    },
+    relations: [
+      { id: 'wardley-mapping',      type: 'COMBINES',  note: 'Wardley reveals which BMC activities are evolving toward commodity.' },
+      { id: 'ansoff',               type: 'COMBINES',  note: 'Ansoff defines the growth direction; BMC designs the model to deliver it.' },
+      { id: 'balanced-scorecard',   type: 'PRECEDES',  note: 'The business model defines which performance dimensions the BSC should track.' }
     ]
   },
   {
@@ -796,6 +1043,26 @@ const FRAMEWORKS = [
       "Are the skills of our workforce aligned with the capabilities our strategy requires?",
       "Is our leadership style consistent with our culture and strategic goals?",
       "Are our shared values coherent with all other elements and do they reinforce desired behaviors?"
+    ],
+    meta: {
+      origin: { author: 'Peters, Waterman & Philips (McKinsey)', year: 1982 },
+      timeToApply: 'deep',
+      outputType: 'Alignment diagnostic',
+      projectTypes: ['Organizational change', 'M&A integration', 'Strategy implementation']
+    },
+    context: {
+      whenToUse: "When diagnosing organizational dysfunction, planning a transformation, or integrating two organizations after a merger.",
+      whenNotToUse: "Not designed for competitive or market analysis — always pair with external-facing frameworks first.",
+      pitfalls: [
+        "Focusing only on hard elements (Strategy, Structure, Systems) while neglecting the soft ones that shape culture.",
+        "Conducting the assessment without honest input from multiple organizational levels.",
+        "Identifying misalignments without defining who owns the remediation and by when."
+      ]
+    },
+    relations: [
+      { id: 'balanced-scorecard', type: 'PRECEDES',  note: 'Confirm organizational alignment before cascading BSC targets.' },
+      { id: 'vrio',               type: 'COMBINES',  note: '7-S provides the organizational context in which VRIO resources are exploited.' },
+      { id: 'blue-ocean',         type: 'VALIDATES', note: 'Can the current 7-S configuration actually deliver a Blue Ocean strategy?' }
     ]
   },
   {
@@ -810,6 +1077,26 @@ const FRAMEWORKS = [
       "What external trends, market shifts, or unmet needs could we exploit?",
       "What external competitive, regulatory, or market forces pose a risk to our business?",
       "How can we use our strengths to capture opportunities and defend against threats?"
+    ],
+    meta: {
+      origin: { author: 'Albert Humphrey (Stanford)', year: 1960 },
+      timeToApply: 'quick',
+      outputType: '2×2 matrix',
+      projectTypes: ['Situation assessment', 'Strategy workshops', 'Annual planning']
+    },
+    context: {
+      whenToUse: "As a first-pass situation assessment at the start of a strategy process, or to frame a workshop discussion.",
+      whenNotToUse: "Not a strategy in itself — it identifies factors but does not generate options. Never use it as the endpoint of analysis.",
+      pitfalls: [
+        "Listing too many items — 3–5 per quadrant forces genuine prioritization.",
+        "Mixing strategic and operational levels of analysis in the same quadrant.",
+        "Stopping at the SWOT rather than extending to a TOWS matrix to generate actual strategic options."
+      ]
+    },
+    relations: [
+      { id: 'porters-five-forces', type: 'COMBINES',  note: 'Five Forces deepens and validates the Opportunities & Threats quadrants.' },
+      { id: 'ansoff',              type: 'PRECEDES',  note: 'SWOT findings directly inform which Ansoff growth quadrant is most appropriate.' },
+      { id: 'blue-ocean',          type: 'CONTRASTS', note: 'SWOT maps existing constraints; Blue Ocean challenges you to transcend them.' }
     ]
   },
   {
@@ -824,6 +1111,26 @@ const FRAMEWORKS = [
       "What new products or services could we develop for our existing customer base?",
       "What diversification opportunities exist that leverage or expand our capabilities?",
       "What is the risk-return tradeoff for each of the four growth strategy options?"
+    ],
+    meta: {
+      origin: { author: 'H. Igor Ansoff', year: 1957 },
+      timeToApply: 'quick',
+      outputType: '2×2 growth matrix',
+      projectTypes: ['Growth strategy', 'Market entry', 'Portfolio planning']
+    },
+    context: {
+      whenToUse: "When a leadership team needs to align on growth direction and explicitly weigh the risk-return tradeoff of each option.",
+      whenNotToUse: "Does not account for competitive dynamics or capability gaps — always pair with VRIO and Porter's Five Forces.",
+      pitfalls: [
+        "Selecting quadrants based on ambition rather than capability — always anchor each option to a VRIO assessment.",
+        "Defaulting to diversification when simpler, lower-risk options haven't been exhausted first.",
+        "Ignoring that market development and product development require very different organizational capabilities."
+      ]
+    },
+    relations: [
+      { id: 'swot',                  type: 'VALIDATES', note: 'SWOT findings should validate which Ansoff quadrant is most viable.' },
+      { id: 'business-model-canvas', type: 'COMBINES',  note: 'Once the growth direction is chosen, BMC designs the model to deliver it.' },
+      { id: 'blue-ocean',            type: 'CONTRASTS', note: 'Ansoff grows within known market spaces; Blue Ocean creates entirely new ones.' }
     ]
   },
   {
@@ -838,6 +1145,26 @@ const FRAMEWORKS = [
       "Which factors should be raised well above the industry standard?",
       "Which factors should be created that the industry has never offered?",
       "Where is the 'blue ocean' where we could create and capture uncontested market space?"
+    ],
+    meta: {
+      origin: { author: 'Kim & Mauborgne', year: 2005 },
+      timeToApply: 'deep',
+      outputType: 'Strategy canvas + ERRC grid',
+      projectTypes: ['Business model innovation', 'Market creation', 'Differentiation strategy']
+    },
+    context: {
+      whenToUse: "When a market is hypercompetitive, margins are under severe pressure, and incremental improvement is no longer sufficient.",
+      whenNotToUse: "Not appropriate when the goal is to win share within an existing market — competitive frameworks are more relevant there.",
+      pitfalls: [
+        "Confusing product innovation with value innovation — Blue Ocean requires simultaneously raising buyer value and lowering cost.",
+        "Skipping the ERRC grid and jumping to ideas without structured analysis of what to eliminate and reduce.",
+        "Failing to test the idea against all three Blue Ocean criteria: exceptional utility, accessible price, and achievable cost."
+      ]
+    },
+    relations: [
+      { id: 'porters-five-forces',   type: 'CONTRASTS', note: "Porter's accepts industry structure as given; Blue Ocean challenges it." },
+      { id: 'ansoff',                type: 'CONTRASTS', note: 'Ansoff grows within known market boundaries; Blue Ocean redraws them.' },
+      { id: 'business-model-canvas', type: 'VALIDATES', note: 'Test whether the Blue Ocean value innovation is supported by a viable business model.' }
     ]
   }
 ];
@@ -880,6 +1207,9 @@ function renderLibrary() {
 }
 
 // ── DETAIL SCREEN ─────────────────────────────────────────────────────────────
+const TIME_LABELS = { quick: 'Quick apply', medium: 'Medium effort', deep: 'Deep dive' };
+const REL_LABELS  = { PRECEDES: 'Leads to', COMBINES: 'Pair with', VALIDATES: 'Validates', CONTRASTS: 'Contrasts' };
+
 function openDetail(id) {
   currentFrameworkId = id;
   const f = FRAMEWORKS.find(x => x.id === id);
@@ -891,17 +1221,74 @@ function openDetail(id) {
   badge.textContent = f.category;
   badge.className = 'detail-category ' + catClass;
 
+  // Meta pills
+  const meta = f.meta;
+  document.getElementById('detail-meta').innerHTML = `
+    <span class="meta-pill">
+      <span class="meta-pill-label">By</span>
+      <span class="meta-pill-dot"></span>
+      ${meta.origin.author}, ${meta.origin.year}
+    </span>
+    <span class="meta-pill time-${meta.timeToApply}">${TIME_LABELS[meta.timeToApply]}</span>
+    <span class="meta-pill">
+      <span class="meta-pill-label">Output</span>
+      <span class="meta-pill-dot"></span>
+      ${meta.outputType}
+    </span>
+    ${meta.projectTypes.map(t => `<span class="meta-pill">${t}</span>`).join('')}
+  `;
+
   document.getElementById('detail-description').textContent = f.description;
 
+  // Context section
+  const ctx = f.context;
+  document.getElementById('detail-context').innerHTML = `
+    <p class="detail-section-title">Application Guide</p>
+    <div class="context-block context-when">
+      <div class="context-block-title">When to use</div>
+      <div class="context-block-text">${ctx.whenToUse}</div>
+    </div>
+    <div class="context-block context-whennot">
+      <div class="context-block-title">When not to use</div>
+      <div class="context-block-text">${ctx.whenNotToUse}</div>
+    </div>
+    <div class="context-block context-pitfalls">
+      <div class="context-block-title">Common pitfalls</div>
+      ${ctx.pitfalls.map(p => `<div class="pitfall-item">${p}</div>`).join('')}
+    </div>
+  `;
+
+  // Key questions
   const ul = document.getElementById('detail-questions');
   ul.innerHTML = f.keyQuestions.map(q => `<li>${q}</li>`).join('');
+
+  // Related frameworks
+  const relEl = document.getElementById('detail-related');
+  if (f.relations && f.relations.length) {
+    relEl.innerHTML = `
+      <p class="detail-section-title">Related Frameworks</p>
+      ${f.relations.map(r => {
+        const rf = FRAMEWORKS.find(x => x.id === r.id);
+        return `<div class="related-card" onclick="openDetail('${r.id}')">
+          <span class="rel-badge rel-${r.type}">${REL_LABELS[r.type]}</span>
+          <div class="related-card-body">
+            <div class="related-card-name">${rf.name}</div>
+            <div class="related-card-note">${r.note}</div>
+          </div>
+          <svg class="related-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`;
+      }).join('')}
+    `;
+  } else {
+    relEl.innerHTML = '';
+  }
 
   document.getElementById('active-toggle').checked = isActive(id);
   document.getElementById('notes-input').value = getNotes(id);
   document.getElementById('save-indicator').textContent = '';
+  document.getElementById('detail-body').scrollTop = 0;
 
   document.getElementById('detail').classList.add('open');
-  // prevent body scroll
   document.getElementById('content').style.overflow = 'hidden';
 }
 
