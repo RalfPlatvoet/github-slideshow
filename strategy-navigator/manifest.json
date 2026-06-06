@@ -1,0 +1,25 @@
+{
+  "name": "PPI Strategy Navigator",
+  "short_name": "Strategy Nav",
+  "description": "Strategy framework library for management consultants",
+  "start_url": "/strategy-navigator/",
+  "scope": "/strategy-navigator/",
+  "display": "standalone",
+  "background_color": "#1B2A4A",
+  "theme_color": "#C9A84C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

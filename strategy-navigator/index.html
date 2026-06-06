@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Strategy Nav">
+  <meta name="theme-color" content="#1B2A4A">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>PPI Strategy Navigator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1B2A4A;
+      --navy-dark: #121e35;
+      --gold: #C9A84C;
+      --gold-light: #f5e9c6;
+      --gold-dim: #9e7e32;
+      --white: #fff;
+      --gray-50: #f8f9fa;
+      --gray-100: #f1f3f5;
+      --gray-200: #e9ecef;
+      --gray-400: #ced4da;
+      --gray-500: #adb5bd;
+      --gray-700: #495057;
+      --gray-900: #212529;
+      --header-h: 56px;
+      --tab-h: 64px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --cat-competitive: #1B2A4A;
+      --cat-resource: #1a6b52;
+      --cat-execution: #7a3b00;
+      --cat-innovation: #7c4d00;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      overscroll-behavior: none;
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-top: var(--safe-top);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    #header {
+      background: var(--navy);
+      color: var(--white);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    #header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--white);
+    }
+
+    #header .gold-dot {
+      color: var(--gold);
+      margin-right: 8px;
+    }
+
+    /* ── CONTENT AREA ── */
+    #content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      padding: 16px 16px 0;
+      display: none;
+    }
+
+    .screen.active { display: block; }
+
+    /* ── TAB BAR ── */
+    #tab-bar {
+      background: var(--navy);
+      height: calc(var(--tab-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      display: flex;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 4px;
+      min-height: 44px;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--gold);
+    }
+
+    .tab-btn svg { width: 22px; height: 22px; }
+
+    /* ── FRAMEWORK GRID ── */
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding-bottom: 16px;
+    }
+
+    .framework-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 16px 14px 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .framework-card:active {
+      transform: scale(0.97);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .framework-card.is-active::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--navy);
+    }
+
+    .card-desc {
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    .card-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 7px;
+      border-radius: 20px;
+      align-self: flex-start;
+    }
+
+    .badge-competitive { background: #e8edf5; color: var(--cat-competitive); }
+    .badge-resource    { background: #e0f2ec; color: var(--cat-resource); }
+    .badge-execution   { background: #fef0e0; color: var(--cat-execution); }
+    .badge-innovation  { background: #fef5e0; color: var(--cat-innovation); }
+
+    /* ── DETAIL SCREEN ── */
+    #detail {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+    }
+
+    #detail.open {
+      transform: translateX(0);
+    }
+
+    #detail-header {
+      background: var(--navy);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    #back-btn {
+      background: none;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #back-btn svg { width: 20px; height: 20px; }
+
+    #detail-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #detail-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 20px 0;
+    }
+
+    .detail-category {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .detail-description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--gray-700);
+      margin-bottom: 20px;
+    }
+
+    .detail-section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 12px;
+    }
+
+    .key-questions {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .key-questions li {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--gray-700);
+      padding: 10px 14px 10px 36px;
+      position: relative;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .key-questions li::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 16px;
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    .notes-area {
+      margin-bottom: 20px;
+    }
+
+    .notes-area label {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .notes-textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.55;
+      color: var(--gray-900);
+      background: var(--white);
+      resize: vertical;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .notes-textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .notes-save-indicator {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 6px;
+      height: 16px;
+      transition: opacity 0.3s;
+    }
+
+    /* ── ACTIVE TOGGLE ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--gray-50);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .toggle-sub {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0; height: 0;
+      position: absolute;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--gray-400);
+      border-radius: 28px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .toggle-slider::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 22px;
+      height: 22px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--gold);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::after {
+      transform: translateX(22px);
+    }
+
+    /* ── DETAIL FOOTER BUTTONS ── */
+    .detail-footer {
+      padding: 16px 20px calc(16px + var(--safe-bottom));
+      background: var(--white);
+      border-top: 1px solid var(--gray-100);
+      flex-shrink: 0;
+    }
+
+    .export-btn {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 52px;
+      transition: background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .export-btn:active { background: var(--navy-dark); }
+
+    .export-btn svg { width: 18px; height: 18px; }
+
+    /* ── MY ANALYSIS SCREEN ── */
+    .analysis-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .analysis-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .export-all-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 22px;
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      transition: background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .export-all-btn:active { background: var(--gold-dim); color: var(--white); }
+
+    .export-all-btn svg { width: 14px; height: 14px; }
+
+    .analysis-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s;
+    }
+
+    .analysis-card:active { transform: scale(0.98); }
+
+    .analysis-card-star {
+      color: var(--gold);
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .analysis-card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .analysis-card-notes {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .analysis-card-no-notes {
+      font-size: 12px;
+      color: var(--gray-500);
+      font-style: italic;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--gray-500);
+      line-height: 1.5;
+    }
+
+    /* ── SCREEN BOTTOM PADDING ── */
+    .screen-pad-bottom {
+      height: 16px;
+    }
+
+    /* ── LIBRARY HEADER ── */
+    .library-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--tab-h) + var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--navy);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── META ROW ── */
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .meta-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1;
+    }
+
+    .meta-pill-label {
+      color: var(--gray-500);
+      font-size: 10px;
+    }
+
+    .meta-pill-dot {
+      width: 3px; height: 3px;
+      background: var(--gray-400);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .time-quick  { border-color: #b8e0cb; background: #eef7f0; color: #1a6b52; }
+    .time-medium { border-color: #f5dba0; background: #fef8ec; color: #7c4d00; }
+    .time-deep   { border-color: #c5b8d8; background: #f5f0fb; color: #5c3b8a; }
+
+    /* ── CONTEXT SECTION ── */
+    .context-section { margin-bottom: 24px; }
+
+    .context-block {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+
+    .context-block-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 5px;
+    }
+
+    .context-block-text {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--gray-700);
+    }
+
+    .context-when    { background: #eef7f0; }
+    .context-when    .context-block-title { color: #1a6b52; }
+    .context-whennot { background: #fef5e8; }
+    .context-whennot .context-block-title { color: #7a3b00; }
+    .context-pitfalls { background: var(--gray-50); border: 1px solid var(--gray-200); }
+    .context-pitfalls .context-block-title { color: var(--navy); }
+
+    .pitfall-item {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+      padding-left: 14px;
+      position: relative;
+      margin-top: 6px;
+    }
+
+    .pitfall-item::before {
+      content: '!';
+      position: absolute;
+      left: 0;
+      font-weight: 800;
+      color: var(--gold-dim);
+      font-size: 11px;
+    }
+
+    /* ── RELATED FRAMEWORKS ── */
+    .related-section { margin-bottom: 24px; }
+
+    .related-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .related-card:active {
+      background: var(--gray-50);
+      border-color: var(--gold);
+    }
+
+    .rel-badge {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .rel-PRECEDES  { background: #e0f2ec; color: #1a6b52; }
+    .rel-COMBINES  { background: #e8edf5; color: var(--navy); }
+    .rel-VALIDATES { background: #f3eef9; color: #5c3b8a; }
+    .rel-CONTRASTS { background: #fef0e0; color: #7a3b00; }
+
+    .related-card-body { flex: 1; min-width: 0; }
+
+    .related-card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+
+    .related-card-note {
+      font-size: 11px;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+
+    .related-card-chevron {
+      color: var(--gray-400);
+      flex-shrink: 0;
+    }
+
+    /* ── WORKFLOW PICKER ── */
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding-bottom: 16px;
+    }
+
+    .workflow-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 14px 13px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .workflow-card:active { transform: scale(0.97); }
+
+    .workflow-card-effort {
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-bottom: 5px;
+    }
+
+    .workflow-card-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      line-height: 1.25;
+      margin-bottom: 5px;
+    }
+
+    .workflow-card-desc {
+      font-size: 11px;
+      color: var(--gray-700);
+      line-height: 1.4;
+    }
+
+    .workflow-card-steps {
+      display: flex;
+      gap: 3px;
+      margin-top: 10px;
+    }
+
+    .wf-step-pip {
+      height: 3px;
+      flex: 1;
+      border-radius: 2px;
+      background: var(--gray-200);
+    }
+
+    /* ── WORKFLOW DETAIL OVERLAY ── */
+    #workflow-detail {
+      position: fixed;
+      inset: 0;
+      background: var(--gray-50);
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+    }
+
+    #workflow-detail.open { transform: translateX(0); }
+
+    #workflow-detail-header {
+      background: var(--navy);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    #workflow-detail-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      flex: 1;
+    }
+
+    #workflow-detail-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px 0;
+    }
+
+    /* ── WORKFLOW STEPPER ── */
+    .wf-step {
+      display: flex;
+      gap: 14px;
+    }
+
+    .wf-step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .wf-step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .wf-step-circle.done { background: #1a6b52; }
+
+    .wf-step-line {
+      width: 2px;
+      flex: 1;
+      min-height: 16px;
+      background: var(--gray-200);
+      margin: 4px 0;
+    }
+
+    .wf-step-content {
+      flex: 1;
+      padding-bottom: 22px;
+      min-width: 0;
+    }
+
+    .wf-step-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 7px 0 10px;
+    }
+
+    .wf-step-io {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 8px;
+    }
+
+    .wf-step-io-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+    }
+
+    .wf-step-io-text {
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .wf-open-btn {
+      width: 100%;
+      background: var(--gold-light);
+      color: var(--navy);
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wf-open-btn:active { background: var(--gold); }
+
+    /* ── NETWORK SCREEN ── */
+    #screen-network { padding: 0; }
+
+    #net-container {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .net-legend {
+      display: flex;
+      gap: 14px;
+      padding: 8px 16px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .net-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--gray-700);
+      white-space: nowrap;
+    }
+
+    .net-legend-line {
+      width: 14px;
+      height: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    #net-svg-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #net-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── NETWORK INFO PANEL ── */
+    #net-info {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      padding: 16px 20px calc(16px + var(--safe-bottom));
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 150;
+      max-height: 58vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #net-info.open { transform: translateY(0); }
+
+    .net-info-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--gray-200);
+      border-radius: 2px;
+      margin: 0 auto 14px;
+    }
+
+    .net-info-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 6px 0 8px;
+    }
+
+    .net-info-desc {
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .net-info-rels {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+
+    .net-info-rel {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--gray-700);
+      line-height: 1.4;
+    }
+
+    .net-info-open {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 50px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .net-info-open:active { background: var(--navy-dark); }
+
+    /* ── SHARED BACK BUTTON ── */
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── TOOLTIP BUBBLE ── */
+    #tip-bubble {
+      position: fixed;
+      background: var(--navy);
+      border-radius: 10px;
+      padding: 10px 13px;
+      max-width: 210px;
+      z-index: 1100;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px) scale(0.95);
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    }
+
+    #tip-bubble.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .tip-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .tip-text {
+      font-size: 12px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .tip-arrow {
+      position: absolute;
+      width: 0; height: 0;
+    }
+
+    .tip-arrow-down {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid var(--navy);
+      bottom: -6px;
+    }
+
+    .tip-arrow-up {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid var(--navy);
+      top: -6px;
+    }
+
+    .tip-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.55;
+      font-size: 11px;
+      padding: 0 0 0 3px;
+      vertical-align: middle;
+      line-height: 1;
+      display: inline;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── LONG-PRESS PREVIEW ── */
+    #lp-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 30, 53, 0.65);
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    #lp-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #lp-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      transform: scale(0.93);
+      transition: transform 0.2s;
+    }
+
+    #lp-overlay.visible #lp-card { transform: scale(1); }
+
+    .lp-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 8px 0 10px;
+    }
+
+    .lp-desc {
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+
+    .lp-q-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gray-500);
+      margin-bottom: 6px;
+    }
+
+    .lp-question {
+      font-size: 13px;
+      color: var(--navy);
+      font-style: italic;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      padding-left: 12px;
+      border-left: 3px solid var(--gold);
+    }
+
+    .lp-open {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 50px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lp-open:active { background: var(--navy-dark); }
+
+    /* ── SCROLLBAR (desktop preview) ── */
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Main Header -->
+  <header id="header">
+    <h1><span class="gold-dot">◆</span>PPI Strategy Navigator</h1>
+  </header>
+
+  <!-- Screens -->
+  <main id="content">
+    <!-- Screen 1: Framework Library -->
+    <section id="screen-library" class="screen active">
+      <p class="library-heading">Framework Library</p>
+      <div class="framework-grid" id="framework-grid"></div>
+      <div class="screen-pad-bottom"></div>
+    </section>
+
+    <!-- Screen 2: Guided Workflow -->
+    <section id="screen-workflow" class="screen">
+      <p class="library-heading">Guided Workflow</p>
+      <div class="workflow-grid" id="workflow-grid"></div>
+      <div class="screen-pad-bottom"></div>
+    </section>
+
+    <!-- Screen 3: Framework Network -->
+    <section id="screen-network" class="screen">
+      <div id="net-container">
+        <div class="net-legend">
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#1a6b52"></span>Leads to</span>
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#1B5296"></span>Pair with</span>
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#7b5fa8"></span>Validates</span>
+          <span class="net-legend-item"><span class="net-legend-line" style="background:#c47b2a"></span>Contrasts</span>
+        </div>
+        <div id="net-svg-wrap">
+          <svg id="net-svg" viewBox="0 0 360 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 4: My Analysis -->
+    <section id="screen-analysis" class="screen">
+      <div class="analysis-header">
+        <span class="analysis-title">My Analysis</span>
+        <button class="export-all-btn" id="export-all-btn" onclick="exportAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Export All
+        </button>
+      </div>
+      <div id="analysis-list"></div>
+      <div class="screen-pad-bottom"></div>
+    </section>
+  </main>
+
+  <!-- Tab Bar -->
+  <nav id="tab-bar">
+    <button class="tab-btn active" data-tab="library" onclick="switchTab('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Library
+    </button>
+    <button class="tab-btn" data-tab="workflow" onclick="switchTab('workflow')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="11"/>
+        <circle cx="12" cy="12" r="2"/><line x1="12" y1="14" x2="12" y2="18"/>
+        <circle cx="12" cy="19" r="2"/>
+      </svg>
+      Workflow
+    </button>
+    <button class="tab-btn" data-tab="network" onclick="switchTab('network')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="5" r="2.5"/><circle cx="4" cy="19" r="2.5"/><circle cx="20" cy="19" r="2.5"/>
+        <line x1="12" y1="7.5" x2="4" y2="16.5"/><line x1="12" y1="7.5" x2="20" y2="16.5"/>
+        <line x1="6.5" y1="19" x2="17.5" y2="19"/>
+      </svg>
+      Network
+    </button>
+    <button class="tab-btn" data-tab="analysis" onclick="switchTab('analysis')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+      Analysis
+    </button>
+  </nav>
+
+  <!-- Workflow Detail Overlay (slides from right) -->
+  <div id="workflow-detail">
+    <div id="workflow-detail-header">
+      <button class="back-btn" onclick="closeWorkflow()" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span id="workflow-detail-title"></span>
+    </div>
+    <div id="workflow-detail-body"></div>
+  </div>
+
+  <!-- Framework Detail Screen (slides from right) -->
+  <div id="detail">
+    <div id="detail-header">
+      <button id="back-btn" onclick="closeDetail()" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <span id="detail-title"></span>
+    </div>
+    <div id="detail-body">
+      <span id="detail-category-badge" class="detail-category"></span>
+      <div id="detail-meta" class="meta-row"></div>
+      <p id="detail-description" class="detail-description"></p>
+      <div id="detail-context" class="context-section"></div>
+      <p class="detail-section-title">Key Questions</p>
+      <ul id="detail-questions" class="key-questions"></ul>
+      <div id="detail-related" class="related-section"></div>
+      <div class="toggle-row" id="active-toggle-row">
+        <div>
+          <div class="toggle-label">Mark as Active <button class="tip-btn" data-tip="active-toggle" onclick="event.stopPropagation();showTip(this)">ⓘ</button></div>
+          <div class="toggle-sub">Adds to My Analysis</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="active-toggle" onchange="toggleActive()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="notes-area">
+        <label for="notes-input">My Notes</label>
+        <textarea class="notes-textarea" id="notes-input"
+          placeholder="Add your analysis notes here…"
+          oninput="autoSaveNotes()"></textarea>
+        <div class="notes-save-indicator" id="save-indicator"></div>
+      </div>
+      <div class="screen-pad-bottom"></div>
+    </div>
+    <div class="detail-footer">
+      <button class="export-btn" onclick="exportFramework()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        Export Framework + Notes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Tooltip Bubble (global, one instance) -->
+<div id="tip-bubble">
+  <div class="tip-title"></div>
+  <div class="tip-text"></div>
+  <div class="tip-arrow tip-arrow-down"></div>
+</div>
+
+<!-- Long-Press Preview Overlay -->
+<div id="lp-overlay" onclick="closeLongPress()">
+  <div id="lp-card" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- Network Node Info Panel -->
+<div id="net-info">
+  <div class="net-info-handle"></div>
+  <span id="net-info-badge" class="detail-category"></span>
+  <div id="net-info-name" class="net-info-name"></div>
+  <div id="net-info-desc" class="net-info-desc"></div>
+  <div id="net-info-rels" class="net-info-rels"></div>
+  <button class="net-info-open" onclick="openDetailFromNetwork()">Open Framework</button>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const FRAMEWORKS = [
+  {
+    id: 'porters-five-forces',
+    name: "Porter's Five Forces",
+    shortDesc: "Analyzes competitive intensity and market attractiveness.",
+    category: "Competitive",
+    description: "Porter's Five Forces is a framework for analyzing the structural drivers of industry profitability. Developed by Michael Porter in 1979, it examines five key forces: competitive rivalry, threat of new entrants, bargaining power of suppliers, bargaining power of buyers, and threat of substitutes. By assessing each force, strategists understand where power lies in an industry. The model enables organizations to develop strategies that strengthen their long-term competitive position.",
+    keyQuestions: [
+      "How intense is the rivalry among existing competitors in this market?",
+      "How easy is it for new players to enter our industry?",
+      "How much power do our key suppliers hold over pricing and terms?",
+      "How much leverage do our customers have to push prices down?",
+      "What substitute products or services could draw customers away from us?"
+    ],
+    meta: {
+      origin: { author: 'Michael E. Porter', year: 1979 },
+      timeToApply: 'medium',
+      outputType: 'Five-axis matrix',
+      projectTypes: ['Market entry', 'Competitive analysis', 'M&A due diligence']
+    },
+    context: {
+      whenToUse: "When assessing the long-term attractiveness of an industry or evaluating a new market to enter.",
+      whenNotToUse: "When operational decisions need to be made quickly — it addresses structural, not tactical, issues.",
+      pitfalls: [
+        "Defining the industry too broadly or too narrowly distorts all five forces.",
+        "Treating it as a one-time snapshot rather than a dynamic, recurring analysis.",
+        "Ignoring interdependencies — a change in one force typically shifts others."
+      ]
+    },
+    relations: [
+      { id: 'swot',       type: 'PRECEDES',  note: 'Industry forces inform the external Opportunities & Threats in SWOT.' },
+      { id: 'blue-ocean', type: 'PRECEDES',  note: 'Understanding red-ocean intensity is the starting point for Blue Ocean.' },
+      { id: 'vrio',       type: 'VALIDATES', note: 'Which internal resources protect against which competitive forces?' }
+    ]
+  },
+  {
+    id: 'vrio',
+    name: "VRIO Analysis",
+    shortDesc: "Evaluates resources for sustainable competitive advantage.",
+    category: "Resource",
+    description: "VRIO Analysis evaluates a firm's resources and capabilities as potential sources of sustained competitive advantage. The acronym stands for Value, Rarity, Imitability, and Organization. A resource must be Valuable (exploiting opportunities or neutralizing threats), Rare (few competitors possess it), costly to Imitate, and the firm must be Organized to capture value from it. Only resources meeting all four criteria create sustainable competitive advantage rather than temporary gains.",
+    keyQuestions: [
+      "Does this resource add value by exploiting opportunities or neutralizing threats?",
+      "How many competitors currently possess this resource or capability?",
+      "How costly would it be for competitors to develop or acquire this resource?",
+      "Is the organization structured to fully exploit this resource's potential?",
+      "Which resources represent our true sources of sustainable competitive advantage?"
+    ],
+    meta: {
+      origin: { author: 'Jay B. Barney', year: 1991 },
+      timeToApply: 'medium',
+      outputType: 'Resource evaluation table',
+      projectTypes: ['Capability assessment', 'Post-merger integration', 'Strategy formulation']
+    },
+    context: {
+      whenToUse: "When identifying which internal resources and capabilities are genuinely strategic and worth protecting or investing in.",
+      whenNotToUse: "Not useful for analyzing external market dynamics — always pair with an external framework like Porter's Five Forces.",
+      pitfalls: [
+        "Confusing 'valuable' with 'rare' — a resource can be valuable but still easily replicated.",
+        "Underestimating the 'Organization' criterion — even rare, inimitable resources create no advantage if the firm can't exploit them.",
+        "Static analysis — VRIO must be revisited regularly as the competitive landscape evolves."
+      ]
+    },
+    relations: [
+      { id: 'porters-five-forces', type: 'VALIDATES', note: 'Assess which resources withstand each of the five competitive forces.' },
+      { id: 'mckinsey-7s',         type: 'COMBINES',  note: 'VRIO identifies what is strategic; 7-S explains how the organization leverages it.' },
+      { id: 'balanced-scorecard',  type: 'PRECEDES',  note: 'Strategic resources become the capability drivers in BSC perspectives.' }
+    ]
+  },
+  {
+    id: 'balanced-scorecard',
+    name: "Balanced Scorecard",
+    shortDesc: "Aligns business activities to vision across four perspectives.",
+    category: "Execution",
+    description: "The Balanced Scorecard, introduced by Kaplan and Norton in 1992, translates an organization's vision and strategy into performance measures across four perspectives: Financial, Customer, Internal Business Processes, and Learning & Growth. This ensures organizations look beyond short-term financial results and invest in the capabilities needed for long-term success. It is widely used to communicate strategy, align departmental goals, and track strategic execution. The framework prevents organizations from optimizing one dimension at the expense of others.",
+    keyQuestions: [
+      "What financial objectives must we achieve to satisfy our shareholders?",
+      "How should we appear to our customers to achieve our vision?",
+      "Which internal processes must we excel at to satisfy customers and shareholders?",
+      "How must we learn and innovate to achieve our vision and sustain value creation?",
+      "Are our strategic initiatives and KPIs balanced across all four perspectives?"
+    ],
+    meta: {
+      origin: { author: 'Kaplan & Norton', year: 1992 },
+      timeToApply: 'deep',
+      outputType: 'Four-perspective scorecard',
+      projectTypes: ['Strategy implementation', 'Performance management', 'Organizational alignment']
+    },
+    context: {
+      whenToUse: "When translating a defined strategy into measurable targets and cascading them across the organization.",
+      whenNotToUse: "Not a strategy formulation tool — it implements strategy, it does not create it. Define strategy first.",
+      pitfalls: [
+        "Too many KPIs dilute focus — 20–25 measures maximum across all four perspectives.",
+        "Treating it as a reporting dashboard rather than an active management tool.",
+        "Failing to establish causal links between perspectives: Learning drives Process, which drives Customer, which drives Financial."
+      ]
+    },
+    relations: [
+      { id: 'mckinsey-7s',          type: 'VALIDATES', note: 'Confirm organizational alignment across all 7-S elements before setting BSC targets.' },
+      { id: 'vrio',                  type: 'COMBINES',  note: 'Strategic resources directly drive the Learning & Growth perspective metrics.' },
+      { id: 'business-model-canvas', type: 'COMBINES',  note: 'The business model defines which performance dimensions the BSC should track.' }
+    ]
+  },
+  {
+    id: 'wardley-mapping',
+    name: "Wardley Mapping",
+    shortDesc: "Visualizes business landscape to guide strategic decisions.",
+    category: "Innovation",
+    description: "Wardley Mapping, developed by Simon Wardley, visualizes the strategic landscape by plotting value chain components along two axes: visibility to the user and evolutionary stage (genesis, custom, product, commodity). It helps organizations identify where to invest, what to build vs. buy, and where disruption is likely. By understanding how components evolve, leaders make better decisions about technology, outsourcing, and innovation bets. It is particularly powerful for technology strategy and digital transformation.",
+    keyQuestions: [
+      "What are the components in our value chain and how visible are they to users?",
+      "At what evolutionary stage is each component — novel, emerging, best practice, or commodity?",
+      "Where are the components in our value chain likely to commoditize next?",
+      "Which activities should we build internally vs. outsource or buy as a service?",
+      "Where are the greatest opportunities and threats in how our landscape is evolving?"
+    ],
+    meta: {
+      origin: { author: 'Simon Wardley', year: 2005 },
+      timeToApply: 'deep',
+      outputType: 'Landscape map',
+      projectTypes: ['Technology strategy', 'Digital transformation', 'Build vs. buy decisions']
+    },
+    context: {
+      whenToUse: "When making investment or build-vs-buy decisions in technology-intensive or rapidly evolving markets.",
+      whenNotToUse: "Less relevant for stable, low-tech industries where components evolve slowly.",
+      pitfalls: [
+        "Spending too long on map perfection — a rough, directionally correct map beats a precise but contested one.",
+        "Mapping at the wrong granularity — too detailed creates noise; too high-level misses actionable insights.",
+        "Forgetting the user anchor — the map must always start from explicit user needs, not internal assumptions."
+      ]
+    },
+    relations: [
+      { id: 'business-model-canvas', type: 'COMBINES',  note: 'Wardley reveals which BMC components are evolving toward commodity.' },
+      { id: 'porters-five-forces',   type: 'COMBINES',  note: 'Map the landscape first, then analyze competitive forces within it.' },
+      { id: 'vrio',                  type: 'VALIDATES', note: 'Which mapped components are truly inimitable vs. on the path to commodity?' }
+    ]
+  },
+  {
+    id: 'business-model-canvas',
+    name: "Business Model Canvas",
+    shortDesc: "Maps all nine building blocks of a business on one page.",
+    category: "Innovation",
+    description: "The Business Model Canvas, created by Alexander Osterwalder, provides a visual framework for describing and challenging business models across nine building blocks: Key Partners, Key Activities, Key Resources, Value Propositions, Customer Relationships, Channels, Customer Segments, Cost Structure, and Revenue Streams. By mapping all elements together, teams gain a holistic view of how a business creates, delivers, and captures value. It is widely used for startup ideation, business model innovation, and competitive benchmarking. The canvas encourages systemic thinking about business design.",
+    keyQuestions: [
+      "What value do we create for our customers and which problems do we solve?",
+      "Who are our most important customer segments and how do we reach them?",
+      "What activities and resources are required to deliver our value proposition?",
+      "What are our most significant costs and what are our key revenue streams?",
+      "Which partnerships are critical to our business model's success?"
+    ],
+    meta: {
+      origin: { author: 'Alexander Osterwalder', year: 2008 },
+      timeToApply: 'medium',
+      outputType: 'Nine-block canvas',
+      projectTypes: ['Business model design', 'Innovation', 'Competitive benchmarking']
+    },
+    context: {
+      whenToUse: "When designing a new business model, stress-testing an existing one, or benchmarking against a competitor's model.",
+      whenNotToUse: "Not a substitute for financial modeling — always complement with detailed P&L projections.",
+      pitfalls: [
+        "Filling in the canvas in isolation rather than iterating with real customer evidence.",
+        "Treating the nine blocks as independent — changing one block cascades through all others.",
+        "Over-specifying the canvas before validating core assumptions with actual customers or partners."
+      ]
+    },
+    relations: [
+      { id: 'wardley-mapping',      type: 'COMBINES',  note: 'Wardley reveals which BMC activities are evolving toward commodity.' },
+      { id: 'ansoff',               type: 'COMBINES',  note: 'Ansoff defines the growth direction; BMC designs the model to deliver it.' },
+      { id: 'balanced-scorecard',   type: 'PRECEDES',  note: 'The business model defines which performance dimensions the BSC should track.' }
+    ]
+  },
+  {
+    id: 'mckinsey-7s',
+    name: "McKinsey 7-S",
+    shortDesc: "Examines seven internal factors for organizational alignment.",
+    category: "Execution",
+    description: "The McKinsey 7-S Framework posits that organizational effectiveness depends on the alignment of seven interrelated elements: Strategy, Structure, Systems, Shared Values, Skills, Style, and Staff. It distinguishes between 'hard' elements (Strategy, Structure, Systems), which are easier to define and manage, and 'soft' elements (Shared Values, Skills, Style, Staff), which are less tangible but equally critical. Misalignment between any two elements creates friction that undermines performance. It is particularly useful during organizational change, mergers, or strategy implementation.",
+    keyQuestions: [
+      "Is our organizational structure aligned with and supportive of our strategy?",
+      "Do our systems and processes enable or hinder our strategic objectives?",
+      "Are the skills of our workforce aligned with the capabilities our strategy requires?",
+      "Is our leadership style consistent with our culture and strategic goals?",
+      "Are our shared values coherent with all other elements and do they reinforce desired behaviors?"
+    ],
+    meta: {
+      origin: { author: 'Peters, Waterman & Philips (McKinsey)', year: 1982 },
+      timeToApply: 'deep',
+      outputType: 'Alignment diagnostic',
+      projectTypes: ['Organizational change', 'M&A integration', 'Strategy implementation']
+    },
+    context: {
+      whenToUse: "When diagnosing organizational dysfunction, planning a transformation, or integrating two organizations after a merger.",
+      whenNotToUse: "Not designed for competitive or market analysis — always pair with external-facing frameworks first.",
+      pitfalls: [
+        "Focusing only on hard elements (Strategy, Structure, Systems) while neglecting the soft ones that shape culture.",
+        "Conducting the assessment without honest input from multiple organizational levels.",
+        "Identifying misalignments without defining who owns the remediation and by when."
+      ]
+    },
+    relations: [
+      { id: 'balanced-scorecard', type: 'PRECEDES',  note: 'Confirm organizational alignment before cascading BSC targets.' },
+      { id: 'vrio',               type: 'COMBINES',  note: '7-S provides the organizational context in which VRIO resources are exploited.' },
+      { id: 'blue-ocean',         type: 'VALIDATES', note: 'Can the current 7-S configuration actually deliver a Blue Ocean strategy?' }
+    ]
+  },
+  {
+    id: 'swot',
+    name: "SWOT Analysis",
+    shortDesc: "Identifies internal strengths/weaknesses and external opportunities/threats.",
+    category: "Competitive",
+    description: "SWOT Analysis examines an organization's internal Strengths and Weaknesses alongside external Opportunities and Threats. Internal factors relate to the organization's own resources, capabilities, and processes; external factors relate to the competitive environment and macro forces. The framework helps identify where to leverage advantages, where improvement is needed, which opportunities to pursue, and which threats to mitigate. A SWOT matrix can be extended into a TOWS analysis to systematically generate strategic options from the intersection of each quadrant.",
+    keyQuestions: [
+      "What internal capabilities and resources give us a competitive advantage?",
+      "What internal weaknesses or gaps put us at a disadvantage relative to competitors?",
+      "What external trends, market shifts, or unmet needs could we exploit?",
+      "What external competitive, regulatory, or market forces pose a risk to our business?",
+      "How can we use our strengths to capture opportunities and defend against threats?"
+    ],
+    meta: {
+      origin: { author: 'Albert Humphrey (Stanford)', year: 1960 },
+      timeToApply: 'quick',
+      outputType: '2×2 matrix',
+      projectTypes: ['Situation assessment', 'Strategy workshops', 'Annual planning']
+    },
+    context: {
+      whenToUse: "As a first-pass situation assessment at the start of a strategy process, or to frame a workshop discussion.",
+      whenNotToUse: "Not a strategy in itself — it identifies factors but does not generate options. Never use it as the endpoint of analysis.",
+      pitfalls: [
+        "Listing too many items — 3–5 per quadrant forces genuine prioritization.",
+        "Mixing strategic and operational levels of analysis in the same quadrant.",
+        "Stopping at the SWOT rather than extending to a TOWS matrix to generate actual strategic options."
+      ]
+    },
+    relations: [
+      { id: 'porters-five-forces', type: 'COMBINES',  note: 'Five Forces deepens and validates the Opportunities & Threats quadrants.' },
+      { id: 'ansoff',              type: 'PRECEDES',  note: 'SWOT findings directly inform which Ansoff growth quadrant is most appropriate.' },
+      { id: 'blue-ocean',          type: 'CONTRASTS', note: 'SWOT maps existing constraints; Blue Ocean challenges you to transcend them.' }
+    ]
+  },
+  {
+    id: 'ansoff',
+    name: "Ansoff Matrix",
+    shortDesc: "Maps four growth strategies across products and markets.",
+    category: "Innovation",
+    description: "The Ansoff Matrix, developed by H. Igor Ansoff in 1957, presents four growth strategies based on whether a company is operating with existing or new products in existing or new markets: Market Penetration, Market Development, Product Development, and Diversification. Each quadrant carries a different risk level, with Market Penetration being lowest risk and Diversification being highest. The framework helps leadership teams systematically evaluate their growth options and understand the risk-return tradeoff of each direction. It remains one of the most practical tools for strategic growth planning.",
+    keyQuestions: [
+      "What is our potential to grow by selling more of our existing products to current customers?",
+      "Which new geographic or demographic markets could we enter with our current products?",
+      "What new products or services could we develop for our existing customer base?",
+      "What diversification opportunities exist that leverage or expand our capabilities?",
+      "What is the risk-return tradeoff for each of the four growth strategy options?"
+    ],
+    meta: {
+      origin: { author: 'H. Igor Ansoff', year: 1957 },
+      timeToApply: 'quick',
+      outputType: '2×2 growth matrix',
+      projectTypes: ['Growth strategy', 'Market entry', 'Portfolio planning']
+    },
+    context: {
+      whenToUse: "When a leadership team needs to align on growth direction and explicitly weigh the risk-return tradeoff of each option.",
+      whenNotToUse: "Does not account for competitive dynamics or capability gaps — always pair with VRIO and Porter's Five Forces.",
+      pitfalls: [
+        "Selecting quadrants based on ambition rather than capability — always anchor each option to a VRIO assessment.",
+        "Defaulting to diversification when simpler, lower-risk options haven't been exhausted first.",
+        "Ignoring that market development and product development require very different organizational capabilities."
+      ]
+    },
+    relations: [
+      { id: 'swot',                  type: 'VALIDATES', note: 'SWOT findings should validate which Ansoff quadrant is most viable.' },
+      { id: 'business-model-canvas', type: 'COMBINES',  note: 'Once the growth direction is chosen, BMC designs the model to deliver it.' },
+      { id: 'blue-ocean',            type: 'CONTRASTS', note: 'Ansoff grows within known market spaces; Blue Ocean creates entirely new ones.' }
+    ]
+  },
+  {
+    id: 'blue-ocean',
+    name: "Blue Ocean Strategy",
+    shortDesc: "Creates uncontested market space by making competition irrelevant.",
+    category: "Innovation",
+    description: "Blue Ocean Strategy, by Kim and Mauborgne, advocates for creating entirely new market spaces ('blue oceans') where competition is irrelevant, rather than competing in contested markets ('red oceans'). It uses tools like the Strategy Canvas, the Four Actions Framework (Eliminate–Reduce–Raise–Create), and the Blue Ocean Idea Index to identify value innovation opportunities. By simultaneously pursuing differentiation and low cost, organizations can create new demand rather than fight over existing customers. The framework challenges leaders to question industry assumptions and redefine market boundaries.",
+    keyQuestions: [
+      "Which factors our industry competes on should be eliminated as they add no real value?",
+      "Which factors should be reduced well below the industry standard?",
+      "Which factors should be raised well above the industry standard?",
+      "Which factors should be created that the industry has never offered?",
+      "Where is the 'blue ocean' where we could create and capture uncontested market space?"
+    ],
+    meta: {
+      origin: { author: 'Kim & Mauborgne', year: 2005 },
+      timeToApply: 'deep',
+      outputType: 'Strategy canvas + ERRC grid',
+      projectTypes: ['Business model innovation', 'Market creation', 'Differentiation strategy']
+    },
+    context: {
+      whenToUse: "When a market is hypercompetitive, margins are under severe pressure, and incremental improvement is no longer sufficient.",
+      whenNotToUse: "Not appropriate when the goal is to win share within an existing market — competitive frameworks are more relevant there.",
+      pitfalls: [
+        "Confusing product innovation with value innovation — Blue Ocean requires simultaneously raising buyer value and lowering cost.",
+        "Skipping the ERRC grid and jumping to ideas without structured analysis of what to eliminate and reduce.",
+        "Failing to test the idea against all three Blue Ocean criteria: exceptional utility, accessible price, and achievable cost."
+      ]
+    },
+    relations: [
+      { id: 'porters-five-forces',   type: 'CONTRASTS', note: "Porter's accepts industry structure as given; Blue Ocean challenges it." },
+      { id: 'ansoff',                type: 'CONTRASTS', note: 'Ansoff grows within known market boundaries; Blue Ocean redraws them.' },
+      { id: 'business-model-canvas', type: 'VALIDATES', note: 'Test whether the Blue Ocean value innovation is supported by a viable business model.' }
+    ]
+  }
+];
+
+// ── WORKFLOWS ────────────────────────────────────────────────────────────────
+const WORKFLOWS = [
+  {
+    id: 'market-entry',
+    name: 'Market Entry',
+    description: 'Assess a new market and define your entry strategy.',
+    effort: '2–3 days',
+    steps: [
+      { frameworkId: 'porters-five-forces',
+        input:  'A clearly scoped industry definition and available market data.',
+        output: 'Force ratings, attractiveness score, and the key structural risk factors.' },
+      { frameworkId: 'swot',
+        input:  "Porter's outputs: external threats and opportunities already identified.",
+        output: 'Prioritized S/W/O/T list — ready to extend into a TOWS options matrix.' },
+      { frameworkId: 'ansoff',
+        input:  'SWOT findings: where your strengths best align with identified opportunities.',
+        output: 'Chosen growth quadrant (e.g., Market Development) with risk/return rationale.' },
+      { frameworkId: 'business-model-canvas',
+        input:  'Ansoff output: the target market, product/service, and chosen risk posture.',
+        output: 'Full business model for the chosen entry strategy — ready for financial modeling.' }
+    ]
+  },
+  {
+    id: 'competitive-strategy',
+    name: 'Competitive Strategy',
+    description: 'Understand competitive dynamics and define a winning market position.',
+    effort: '2–4 days',
+    steps: [
+      { frameworkId: 'porters-five-forces',
+        input:  'The competitive arena and intended scope of the analysis.',
+        output: 'Assessment of competitive intensity and attractiveness of the current position.' },
+      { frameworkId: 'swot',
+        input:  "Porter's outputs enrich the O/T quadrants with specific force-based insights.",
+        output: 'Full situational picture linking internal capabilities to external competitive forces.' },
+      { frameworkId: 'vrio',
+        input:  'SWOT strengths: which are genuinely rare, inimitable, and already being exploited?',
+        output: 'Prioritized list of true sources of sustainable competitive advantage.' },
+      { frameworkId: 'blue-ocean',
+        input:  'VRIO output: where you have unique, hard-to-copy strengths to anchor innovation.',
+        output: 'Strategy canvas + ERRC grid defining a differentiated competitive position.' }
+    ]
+  },
+  {
+    id: 'org-transformation',
+    name: 'Org. Transformation',
+    description: 'Diagnose alignment gaps and build a path to successful change.',
+    effort: '3–5 days',
+    steps: [
+      { frameworkId: 'mckinsey-7s',
+        input:  'The target strategy and an honest assessment of the current organizational state.',
+        output: 'Alignment diagnostic: which of the 7 elements are misaligned with the strategy?' },
+      { frameworkId: 'vrio',
+        input:  '7-S output: which resources and capabilities underpin or hinder the transformation.',
+        output: 'Resource roadmap: what to protect, build, or divest during the change.' },
+      { frameworkId: 'balanced-scorecard',
+        input:  'Transformation goals and VRIO capability drivers for each BSC perspective.',
+        output: 'Transformation scorecard: measurable targets across all four perspectives.' }
+    ]
+  },
+  {
+    id: 'ma-integration',
+    name: 'M&A Integration',
+    description: 'Evaluate a target and design a value-capturing integration plan.',
+    effort: '4–6 days',
+    steps: [
+      { frameworkId: 'porters-five-forces',
+        input:  'The target company and its industry scope.',
+        output: 'Industry attractiveness of the target market and key structural risks.' },
+      { frameworkId: 'vrio',
+        input:  "Target's resources: what do they have that we don't — and is it truly strategic?",
+        output: 'Assessment of which target assets represent genuine, sustainable strategic value.' },
+      { frameworkId: 'mckinsey-7s',
+        input:  'Both organizations\' 7-S profiles to identify integration friction points.',
+        output: 'Integration roadmap: where alignment is easy vs. where cultural clashes are likely.' },
+      { frameworkId: 'balanced-scorecard',
+        input:  'Integration goals and the combined entity\'s strategic ambitions.',
+        output: 'Joint scorecard for the merged organization tracking synergy realization.' }
+    ]
+  },
+  {
+    id: 'biz-model-innovation',
+    name: 'Business Model Innovation',
+    description: 'Challenge your existing model and design a compelling new one.',
+    effort: '3–5 days',
+    steps: [
+      { frameworkId: 'blue-ocean',
+        input:  'Current business context and the competitive space you want to escape or reshape.',
+        output: 'ERRC grid and strategy canvas defining the new value innovation direction.' },
+      { frameworkId: 'business-model-canvas',
+        input:  'Blue Ocean output: new value proposition, target customer, and pricing logic.',
+        output: 'Complete new business model mapped across all nine building blocks.' },
+      { frameworkId: 'wardley-mapping',
+        input:  'New BMC: which key activities and resources does the new model depend on?',
+        output: 'Landscape map showing which components to build, buy, or outsource.' }
+    ]
+  },
+  {
+    id: 'tech-strategy',
+    name: 'Technology Strategy',
+    description: 'Map your technology landscape and inform build vs. buy decisions.',
+    effort: '3–4 days',
+    steps: [
+      { frameworkId: 'wardley-mapping',
+        input:  'User needs and the technology components required to serve them.',
+        output: 'Landscape map showing evolutionary stage of all key technology components.' },
+      { frameworkId: 'vrio',
+        input:  'Wardley output: which components in Genesis or Custom-Built phases are truly strategic?',
+        output: 'Identification of which technology bets represent real competitive differentiators.' },
+      { frameworkId: 'business-model-canvas',
+        input:  'VRIO output: what to build internally vs. buy — and what that means for the model.',
+        output: 'Technology-informed business model with clear Key Resources and Activities.' },
+      { frameworkId: 'balanced-scorecard',
+        input:  'Business model and strategic technology priorities from previous steps.',
+        output: 'Technology strategy scorecard with KPIs across all four BSC perspectives.' }
+    ]
+  }
+];
+
+// ── NETWORK NODE POSITIONS ────────────────────────────────────────────────────
+const NET_POS = {
+  'vrio':                  { cx: 180, cy: 85,  label: ['VRIO'] },
+  'mckinsey-7s':           { cx: 261, cy: 119, label: ['McKinsey', '7-S'] },
+  'balanced-scorecard':    { cx: 295, cy: 200, label: ['Balanced', 'Score.'] },
+  'business-model-canvas': { cx: 261, cy: 281, label: ['BM', 'Canvas'] },
+  'ansoff':                { cx: 180, cy: 315, label: ['Ansoff'] },
+  'blue-ocean':            { cx: 99,  cy: 281, label: ['Blue', 'Ocean'] },
+  'swot':                  { cx: 65,  cy: 200, label: ['SWOT'] },
+  'porters-five-forces':   { cx: 99,  cy: 119, label: ["Porter's"] },
+  'wardley-mapping':       { cx: 180, cy: 200, label: ['Wardley'] }
+};
+
+const CAT_COLORS = {
+  Competitive: { fill: '#e8edf5', stroke: '#1B2A4A', text: '#1B2A4A' },
+  Resource:    { fill: '#dff2ea', stroke: '#1a6b52', text: '#1a6b52' },
+  Execution:   { fill: '#fef0e0', stroke: '#7a3b00', text: '#7a3b00' },
+  Innovation:  { fill: '#f0ecf8', stroke: '#5c3b8a', text: '#5c3b8a' }
+};
+
+const EDGE_COLORS = {
+  PRECEDES:  '#1a6b52',
+  COMBINES:  '#1B5296',
+  VALIDATES: '#7b5fa8',
+  CONTRASTS: '#c47b2a'
+};
+
+// ── TOOLTIP SYSTEM ───────────────────────────────────────────────────────────
+const TIP_CONTENT = {
+  'cat-competitive': { title: 'Competitive',   text: 'Analyzes external market forces, competitive dynamics, and industry attractiveness.' },
+  'cat-resource':    { title: 'Resource',      text: 'Evaluates internal capabilities and resources as sources of competitive advantage.' },
+  'cat-execution':   { title: 'Execution',     text: 'Translates strategy into organizational alignment and measurable performance.' },
+  'cat-innovation':  { title: 'Innovation',    text: 'Explores new market opportunities, growth directions, and business model design.' },
+  'rel-PRECEDES':    { title: 'Leads to',      text: 'The output of this framework is the direct input for the linked one.' },
+  'rel-COMBINES':    { title: 'Pair with',     text: 'These two are commonly used together in the same engagement.' },
+  'rel-VALIDATES':   { title: 'Validates',     text: 'Use the linked framework to cross-check or stress-test your findings.' },
+  'rel-CONTRASTS':   { title: 'Contrasts',     text: 'These frameworks offer opposing perspectives on the same strategic question.' },
+  'time-quick':      { title: 'Quick apply',   text: 'Typically 2–4 hours of desk research or a focused workshop.' },
+  'time-medium':     { title: 'Medium effort', text: 'Typically 1–2 days of structured analysis and stakeholder input.' },
+  'time-deep':       { title: 'Deep dive',     text: 'Typically 3–5 days of interviews, data collection, and iteration.' },
+  'active-toggle':   { title: 'Mark as Active',text: 'Pins this framework to the Analysis tab for quick access and export.' }
+};
+
+let tipTimer = null;
+
+function showTip(btn) {
+  const content = TIP_CONTENT[btn.dataset.tip];
+  if (!content) return;
+  const bubble = document.getElementById('tip-bubble');
+  bubble.querySelector('.tip-title').textContent = content.title;
+  bubble.querySelector('.tip-text').textContent  = content.text;
+
+  bubble.style.visibility = 'hidden';
+  bubble.style.opacity = '0';
+  bubble.classList.add('visible');
+
+  const bRect  = btn.getBoundingClientRect();
+  const bW     = bubble.offsetWidth;
+  const bH     = bubble.offsetHeight;
+  const margin = 12;
+  const aboveSpace = bRect.top - bH - 12;
+  const useAbove   = aboveSpace > margin;
+
+  let top  = useAbove ? bRect.top - bH - 10 : bRect.bottom + 10;
+  let left = bRect.left + bRect.width / 2 - bW / 2;
+  left     = Math.max(margin, Math.min(left, window.innerWidth - bW - margin));
+
+  const arrow     = bubble.querySelector('.tip-arrow');
+  arrow.className = 'tip-arrow ' + (useAbove ? 'tip-arrow-down' : 'tip-arrow-up');
+  const arrowLeft = (bRect.left + bRect.width / 2) - left;
+  arrow.style.left = Math.max(10, Math.min(arrowLeft, bW - 10)) + 'px';
+
+  bubble.style.top  = top + 'px';
+  bubble.style.left = left + 'px';
+  bubble.style.visibility = '';
+
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(hideTip, 3000);
+}
+
+function showEdgeTip(e, edge) {
+  const fromF = FRAMEWORKS.find(x => x.id === edge.from);
+  const toF   = FRAMEWORKS.find(x => x.id === edge.to);
+  const note  = fromF.relations.find(r => r.id === edge.to)?.note
+              || toF.relations.find(r => r.id === edge.from)?.note || '';
+  const bubble = document.getElementById('tip-bubble');
+  bubble.querySelector('.tip-title').textContent = `${fromF.name} → ${toF.name}`;
+  bubble.querySelector('.tip-text').textContent  = `${REL_LABELS[edge.type]}: ${note}`;
+
+  const margin = 12, bW = 210;
+  const cx = e.clientX ?? window.innerWidth / 2;
+  const cy = e.clientY ?? 150;
+  let left = cx - bW / 2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - bW - margin));
+  const top = Math.max(margin, cy - 90);
+
+  const arrow = bubble.querySelector('.tip-arrow');
+  arrow.className = 'tip-arrow tip-arrow-down';
+  arrow.style.left = (cx - left) + 'px';
+
+  bubble.style.left = left + 'px';
+  bubble.style.top  = top + 'px';
+  bubble.classList.add('visible');
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(hideTip, 4000);
+}
+
+function hideTip() {
+  document.getElementById('tip-bubble').classList.remove('visible');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tip-btn') && !e.target.closest('#tip-bubble')) hideTip();
+});
+
+// ── LONG-PRESS PREVIEW ────────────────────────────────────────────────────────
+let lpTimer = null;
+let lpFrameworkId = null;
+
+function attachLongPress() {
+  document.querySelectorAll('.framework-card[data-fid]').forEach(card => {
+    card.addEventListener('touchstart', () => {
+      lpTimer = setTimeout(() => showLongPress(card.dataset.fid), 500);
+    }, { passive: true });
+    card.addEventListener('touchend',  () => clearTimeout(lpTimer));
+    card.addEventListener('touchmove', () => clearTimeout(lpTimer));
+  });
+}
+
+function showLongPress(id) {
+  lpFrameworkId = id;
+  const f        = FRAMEWORKS.find(x => x.id === id);
+  const catClass = 'badge-' + f.category.toLowerCase();
+  document.getElementById('lp-card').innerHTML = `
+    <span class="card-badge ${catClass}" style="display:inline-block">${f.category}</span>
+    <div class="lp-name">${f.name}</div>
+    <div class="lp-desc">${f.shortDesc} ${f.description.split('.')[0]}.</div>
+    <div class="lp-q-label">Key question</div>
+    <div class="lp-question">${f.keyQuestions[0]}</div>
+    <button class="lp-open" onclick="openDetailFromPreview()">Open Framework</button>
+  `;
+  document.getElementById('lp-overlay').classList.add('visible');
+}
+
+function closeLongPress() {
+  document.getElementById('lp-overlay').classList.remove('visible');
+}
+
+function openDetailFromPreview() {
+  closeLongPress();
+  setTimeout(() => openDetail(lpFrameworkId), 180);
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentTab = 'library';
+let currentFrameworkId = null;
+let saveTimer = null;
+
+// ── STORAGE HELPERS ───────────────────────────────────────────────────────────
+function getNotes(id)    { return localStorage.getItem('notes_' + id) || ''; }
+function saveNotes(id, v){ localStorage.setItem('notes_' + id, v); }
+function isActive(id)    { return localStorage.getItem('active_' + id) === '1'; }
+function setActive(id, v){ localStorage.setItem('active_' + id, v ? '1' : '0'); }
+
+// ── TAB NAVIGATION ────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  if (currentTab === tab) return;
+  currentTab = tab;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  if (tab === 'analysis') renderAnalysis();
+  if (tab === 'workflow') renderWorkflowPicker();
+  if (tab === 'network')  initNetwork();
+}
+
+// ── LIBRARY RENDER ────────────────────────────────────────────────────────────
+function renderLibrary() {
+  const grid = document.getElementById('framework-grid');
+  grid.innerHTML = FRAMEWORKS.map(f => {
+    const active = isActive(f.id);
+    const catClass = 'badge-' + f.category.toLowerCase();
+    return `<div class="framework-card${active ? ' is-active' : ''}" data-fid="${f.id}" onclick="openDetail('${f.id}')">
+      <span class="card-badge ${catClass}">${f.category}</span>
+      <span class="card-name">${f.name}</span>
+      <span class="card-desc">${f.shortDesc}</span>
+    </div>`;
+  }).join('');
+  attachLongPress();
+}
+
+// ── DETAIL SCREEN ─────────────────────────────────────────────────────────────
+const TIME_LABELS = { quick: 'Quick apply', medium: 'Medium effort', deep: 'Deep dive' };
+const REL_LABELS  = { PRECEDES: 'Leads to', COMBINES: 'Pair with', VALIDATES: 'Validates', CONTRASTS: 'Contrasts' };
+
+function openDetail(id) {
+  currentFrameworkId = id;
+  const f = FRAMEWORKS.find(x => x.id === id);
+  const catClass = 'badge-' + f.category.toLowerCase();
+
+  document.getElementById('detail-title').textContent = f.name;
+
+  const badge = document.getElementById('detail-category-badge');
+  badge.innerHTML = `${f.category} <button class="tip-btn" data-tip="cat-${f.category.toLowerCase()}" onclick="event.stopPropagation();showTip(this)">ⓘ</button>`;
+  badge.className = 'detail-category ' + catClass;
+
+  // Meta pills
+  const meta = f.meta;
+  document.getElementById('detail-meta').innerHTML = `
+    <span class="meta-pill">
+      <span class="meta-pill-label">By</span>
+      <span class="meta-pill-dot"></span>
+      ${meta.origin.author}, ${meta.origin.year}
+    </span>
+    <span class="meta-pill time-${meta.timeToApply}">${TIME_LABELS[meta.timeToApply]} <button class="tip-btn" data-tip="time-${meta.timeToApply}" onclick="event.stopPropagation();showTip(this)">ⓘ</button></span>
+    <span class="meta-pill">
+      <span class="meta-pill-label">Output</span>
+      <span class="meta-pill-dot"></span>
+      ${meta.outputType}
+    </span>
+    ${meta.projectTypes.map(t => `<span class="meta-pill">${t}</span>`).join('')}
+  `;
+
+  document.getElementById('detail-description').textContent = f.description;
+
+  // Context section
+  const ctx = f.context;
+  document.getElementById('detail-context').innerHTML = `
+    <p class="detail-section-title">Application Guide</p>
+    <div class="context-block context-when">
+      <div class="context-block-title">When to use</div>
+      <div class="context-block-text">${ctx.whenToUse}</div>
+    </div>
+    <div class="context-block context-whennot">
+      <div class="context-block-title">When not to use</div>
+      <div class="context-block-text">${ctx.whenNotToUse}</div>
+    </div>
+    <div class="context-block context-pitfalls">
+      <div class="context-block-title">Common pitfalls</div>
+      ${ctx.pitfalls.map(p => `<div class="pitfall-item">${p}</div>`).join('')}
+    </div>
+  `;
+
+  // Key questions
+  const ul = document.getElementById('detail-questions');
+  ul.innerHTML = f.keyQuestions.map(q => `<li>${q}</li>`).join('');
+
+  // Related frameworks
+  const relEl = document.getElementById('detail-related');
+  if (f.relations && f.relations.length) {
+    relEl.innerHTML = `
+      <p class="detail-section-title">Related Frameworks</p>
+      ${f.relations.map(r => {
+        const rf = FRAMEWORKS.find(x => x.id === r.id);
+        return `<div class="related-card" onclick="openDetail('${r.id}')">
+          <span class="rel-badge rel-${r.type}">${REL_LABELS[r.type]} <button class="tip-btn" data-tip="rel-${r.type}" onclick="event.stopPropagation();showTip(this)">ⓘ</button></span>
+          <div class="related-card-body">
+            <div class="related-card-name">${rf.name}</div>
+            <div class="related-card-note">${r.note}</div>
+          </div>
+          <svg class="related-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`;
+      }).join('')}
+    `;
+  } else {
+    relEl.innerHTML = '';
+  }
+
+  document.getElementById('active-toggle').checked = isActive(id);
+  document.getElementById('notes-input').value = getNotes(id);
+  document.getElementById('save-indicator').textContent = '';
+  document.getElementById('detail-body').scrollTop = 0;
+
+  document.getElementById('detail').classList.add('open');
+  document.getElementById('content').style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+  document.getElementById('content').style.overflow = '';
+  renderLibrary();
+  if (currentTab === 'analysis') renderAnalysis();
+  if (currentTab === 'workflow') renderWorkflowPicker();
+}
+
+// ── WORKFLOW FUNCTIONS ────────────────────────────────────────────────────────
+function renderWorkflowPicker() {
+  const grid = document.getElementById('workflow-grid');
+  grid.innerHTML = WORKFLOWS.map(w => {
+    const done = w.steps.filter(s => getNotes(s.frameworkId)).length;
+    return `<div class="workflow-card" onclick="openWorkflow('${w.id}')">
+      <div class="workflow-card-effort">${w.steps.length} frameworks · ${w.effort}</div>
+      <div class="workflow-card-name">${w.name}</div>
+      <div class="workflow-card-desc">${w.description}</div>
+      <div class="workflow-card-steps">
+        ${w.steps.map((s, i) => `<div class="wf-step-pip" style="background:${i < done ? 'var(--gold)' : 'var(--gray-200)'}"></div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openWorkflow(id) {
+  const w = WORKFLOWS.find(x => x.id === id);
+  document.getElementById('workflow-detail-title').textContent = w.name;
+  const body = document.getElementById('workflow-detail-body');
+  body.innerHTML = `
+    <p style="font-size:13px;color:var(--gray-700);line-height:1.55;margin-bottom:20px">${w.description} Estimated effort: <strong>${w.effort}</strong>.</p>
+    ${w.steps.map((step, i) => {
+      const f = FRAMEWORKS.find(x => x.id === step.frameworkId);
+      const hasNotes = !!getNotes(f.id);
+      const catClass = 'badge-' + f.category.toLowerCase();
+      const isLast = i === w.steps.length - 1;
+      return `<div class="wf-step">
+        <div class="wf-step-left">
+          <div class="wf-step-circle${hasNotes ? ' done' : ''}">${hasNotes ? '✓' : i + 1}</div>
+          ${!isLast ? '<div class="wf-step-line"></div>' : ''}
+        </div>
+        <div class="wf-step-content">
+          <span class="card-badge ${catClass}" style="display:inline-block">${f.category}</span>
+          <div class="wf-step-name">${f.name}</div>
+          <div class="wf-step-io">
+            <div class="wf-step-io-label">Input needed</div>
+            <div class="wf-step-io-text">${step.input}</div>
+          </div>
+          <div class="wf-step-io">
+            <div class="wf-step-io-label">Output produced</div>
+            <div class="wf-step-io-text">${step.output}</div>
+          </div>
+          <button class="wf-open-btn" onclick="openDetailFromWorkflow('${f.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            Open Framework
+          </button>
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="screen-pad-bottom"></div>`;
+  body.scrollTop = 0;
+  document.getElementById('workflow-detail').classList.add('open');
+}
+
+function closeWorkflow() {
+  document.getElementById('workflow-detail').classList.remove('open');
+}
+
+function openDetailFromWorkflow(frameworkId) {
+  document.getElementById('workflow-detail').classList.remove('open');
+  setTimeout(() => openDetail(frameworkId), 320);
+}
+
+// ── NETWORK FUNCTIONS ─────────────────────────────────────────────────────────
+let networkReady = false;
+let netActiveId = null;
+
+function buildEdges() {
+  const edges = [], seen = new Set();
+  FRAMEWORKS.forEach(f => {
+    (f.relations || []).forEach(r => {
+      const key = [f.id, r.id].sort().join('|');
+      if (!seen.has(key)) { seen.add(key); edges.push({ from: f.id, to: r.id, type: r.type }); }
+    });
+  });
+  return edges;
+}
+
+function initNetwork() {
+  if (networkReady) return;
+  networkReady = true;
+
+  const svg = document.getElementById('net-svg');
+  const NS  = 'http://www.w3.org/2000/svg';
+  const R   = 30;
+
+  function el(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    return e;
+  }
+
+  // Edges
+  const eGroup = el('g', { id: 'net-edges' });
+  buildEdges().forEach(edge => {
+    const a = NET_POS[edge.from], b = NET_POS[edge.to];
+    if (!a || !b) return;
+    const dx = b.cx - a.cx, dy = b.cy - a.cy, d = Math.sqrt(dx*dx + dy*dy);
+    const ux = dx/d, uy = dy/d;
+    const line = el('line', {
+      x1: a.cx + ux*R, y1: a.cy + uy*R,
+      x2: b.cx - ux*R, y2: b.cy - uy*R,
+      stroke: EDGE_COLORS[edge.type], 'stroke-width': '2',
+      'stroke-linecap': 'round', opacity: '0.45',
+      'data-from': edge.from, 'data-to': edge.to, 'data-type': edge.type
+    });
+    eGroup.appendChild(line);
+  });
+  svg.appendChild(eGroup);
+
+  // Invisible wide overlay lines for edge tap detection
+  const tapGroup = el('g', { id: 'net-edge-taps' });
+  buildEdges().forEach(edge => {
+    const a = NET_POS[edge.from], b = NET_POS[edge.to];
+    if (!a || !b) return;
+    const dx = b.cx - a.cx, dy = b.cy - a.cy, d = Math.sqrt(dx*dx + dy*dy);
+    const ux = dx/d, uy = dy/d;
+    const tapLine = el('line', {
+      x1: a.cx + ux*R, y1: a.cy + uy*R,
+      x2: b.cx - ux*R, y2: b.cy - uy*R,
+      stroke: 'transparent', 'stroke-width': '14', cursor: 'pointer'
+    });
+    tapLine.addEventListener('click', e => { e.stopPropagation(); showEdgeTip(e, edge); });
+    tapGroup.appendChild(tapLine);
+  });
+  svg.appendChild(tapGroup);
+
+  // Nodes
+  const nGroup = el('g', { id: 'net-nodes' });
+  FRAMEWORKS.forEach(f => {
+    const pos = NET_POS[f.id];
+    if (!pos) return;
+    const col = CAT_COLORS[f.category];
+    const g = el('g', { 'data-id': f.id, cursor: 'pointer' });
+
+    g.appendChild(el('circle', {
+      cx: pos.cx, cy: pos.cy, r: R,
+      fill: col.fill, stroke: col.stroke, 'stroke-width': '2'
+    }));
+
+    const lines = pos.label;
+    const lineH = 11;
+    const startY = pos.cy - ((lines.length - 1) * lineH) / 2;
+    lines.forEach((txt, i) => {
+      const t = el('text', {
+        x: pos.cx, y: startY + i * lineH,
+        'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        fill: col.text, 'font-size': '9', 'font-weight': '700',
+        'font-family': 'system-ui,sans-serif', 'pointer-events': 'none'
+      });
+      t.textContent = txt;
+      g.appendChild(t);
+    });
+
+    g.addEventListener('click', e => { e.stopPropagation(); selectNetNode(f.id); });
+    g.addEventListener('touchend', e => { e.preventDefault(); e.stopPropagation(); selectNetNode(f.id); });
+    nGroup.appendChild(g);
+  });
+  svg.appendChild(nGroup);
+
+  svg.addEventListener('click', () => clearNetworkSelection());
+}
+
+function selectNetNode(id) {
+  netActiveId = id;
+  const svg = document.getElementById('net-svg');
+
+  const connected = new Set();
+  FRAMEWORKS.forEach(f => {
+    (f.relations || []).forEach(r => {
+      if (f.id === id) connected.add(r.id);
+      if (r.id === id) connected.add(f.id);
+    });
+  });
+
+  svg.querySelectorAll('#net-nodes g').forEach(g => {
+    const nid = g.dataset.id;
+    const f = FRAMEWORKS.find(x => x.id === nid);
+    const col = CAT_COLORS[f.category];
+    const circle = g.querySelector('circle');
+    if (nid === id) {
+      circle.setAttribute('fill', '#C9A84C');
+      circle.setAttribute('stroke', '#1B2A4A');
+      circle.setAttribute('stroke-width', '3');
+      g.querySelectorAll('text').forEach(t => t.setAttribute('fill', '#1B2A4A'));
+      g.setAttribute('opacity', '1');
+    } else if (connected.has(nid)) {
+      circle.setAttribute('fill', col.fill);
+      circle.setAttribute('stroke', col.stroke);
+      circle.setAttribute('stroke-width', '2.5');
+      g.querySelectorAll('text').forEach(t => t.setAttribute('fill', col.text));
+      g.setAttribute('opacity', '1');
+    } else {
+      circle.setAttribute('fill', col.fill);
+      circle.setAttribute('stroke', col.stroke);
+      circle.setAttribute('stroke-width', '1.5');
+      g.querySelectorAll('text').forEach(t => t.setAttribute('fill', col.text));
+      g.setAttribute('opacity', '0.2');
+    }
+  });
+
+  svg.querySelectorAll('#net-edges line').forEach(line => {
+    const isConnected = line.dataset.from === id || line.dataset.to === id;
+    line.setAttribute('stroke-width', isConnected ? '2.5' : '1.5');
+    line.setAttribute('opacity',      isConnected ? '0.9'  : '0.06');
+  });
+
+  const f = FRAMEWORKS.find(x => x.id === id);
+  const badge = document.getElementById('net-info-badge');
+  badge.textContent = f.category;
+  badge.className = 'detail-category badge-' + f.category.toLowerCase();
+  document.getElementById('net-info-name').textContent = f.name;
+  document.getElementById('net-info-desc').textContent = f.shortDesc + ' ' + f.description.slice(0, f.description.indexOf('.', 40) + 1);
+
+  document.getElementById('net-info-rels').innerHTML = (f.relations || []).map(r => {
+    const rf = FRAMEWORKS.find(x => x.id === r.id);
+    return `<div class="net-info-rel">
+      <span class="rel-badge rel-${r.type}">${REL_LABELS[r.type]}</span>
+      <span>${rf.name} — ${r.note}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('net-info').classList.add('open');
+}
+
+function clearNetworkSelection() {
+  netActiveId = null;
+  const svg = document.getElementById('net-svg');
+  svg.querySelectorAll('#net-nodes g').forEach(g => {
+    const f = FRAMEWORKS.find(x => x.id === g.dataset.id);
+    if (!f) return;
+    const col = CAT_COLORS[f.category];
+    const circle = g.querySelector('circle');
+    circle.setAttribute('fill', col.fill);
+    circle.setAttribute('stroke', col.stroke);
+    circle.setAttribute('stroke-width', '2');
+    g.querySelectorAll('text').forEach(t => t.setAttribute('fill', col.text));
+    g.setAttribute('opacity', '1');
+  });
+  svg.querySelectorAll('#net-edges line').forEach(line => {
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('opacity', '0.45');
+  });
+  document.getElementById('net-info').classList.remove('open');
+}
+
+function openDetailFromNetwork() {
+  if (!netActiveId) return;
+  const id = netActiveId;
+  document.getElementById('net-info').classList.remove('open');
+  setTimeout(() => openDetail(id), 200);
+}
+
+// ── NOTES AUTO-SAVE ───────────────────────────────────────────────────────────
+function autoSaveNotes() {
+  const val = document.getElementById('notes-input').value;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveNotes(currentFrameworkId, val);
+    const ind = document.getElementById('save-indicator');
+    ind.textContent = 'Saved';
+    setTimeout(() => { ind.textContent = ''; }, 1500);
+  }, 400);
+}
+
+// ── ACTIVE TOGGLE ─────────────────────────────────────────────────────────────
+function toggleActive() {
+  const checked = document.getElementById('active-toggle').checked;
+  setActive(currentFrameworkId, checked);
+}
+
+// ── EXPORT HELPERS ────────────────────────────────────────────────────────────
+function formatExport(f) {
+  const notes = getNotes(f.id);
+  const active = isActive(f.id) ? ' ★ Active' : '';
+  return `${f.name}${active}\n${notes || '(no notes)'}\n---`;
+}
+
+function buildFullExport() {
+  const date = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  const active = FRAMEWORKS.filter(f => isActive(f.id));
+  if (!active.length) return null;
+  const lines = [`PPI Strategy Navigator – Export ${date}`, ''];
+  active.forEach(f => { lines.push(formatExport(f)); lines.push(''); });
+  return lines.join('\n');
+}
+
+function share(text, title) {
+  if (navigator.share) {
+    navigator.share({ title, text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard')).catch(() => showToast('Export ready'));
+  }
+}
+
+function exportFramework() {
+  const f = FRAMEWORKS.find(x => x.id === currentFrameworkId);
+  const date = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  const text = `PPI Strategy Navigator – Export ${date}\n\n${formatExport(f)}`;
+  share(text, f.name + ' – PPI Strategy Navigator');
+}
+
+function exportAll() {
+  const text = buildFullExport();
+  if (!text) { showToast('No active frameworks yet'); return; }
+  share(text, 'PPI Strategy Navigator – Full Export');
+}
+
+// ── ANALYSIS SCREEN ───────────────────────────────────────────────────────────
+function renderAnalysis() {
+  const active = FRAMEWORKS.filter(f => isActive(f.id));
+  const list = document.getElementById('analysis-list');
+  const btn = document.getElementById('export-all-btn');
+
+  if (!active.length) {
+    btn.style.display = 'none';
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">◇</div>
+        <div class="empty-title">No Active Frameworks</div>
+        <div class="empty-sub">Open a framework in the Library and toggle "Mark as Active" to add it here.</div>
+      </div>`;
+    return;
+  }
+
+  btn.style.display = '';
+  list.innerHTML = active.map(f => {
+    const notes = getNotes(f.id);
+    const preview = notes.length > 100 ? notes.slice(0, 100) + '…' : notes;
+    const notesHtml = notes
+      ? `<div class="analysis-card-notes">${preview}</div>`
+      : `<div class="analysis-card-no-notes">No notes yet</div>`;
+    return `<div class="analysis-card" onclick="openDetail('${f.id}')">
+      <span class="analysis-card-star">★</span>
+      <div>
+        <div class="analysis-card-name">${f.name}</div>
+        ${notesHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderLibrary();
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/strategy-navigator/sw.js', { scope: '/strategy-navigator/' })
+      .catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
