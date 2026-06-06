@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPI Strategy Navigator – Benutzerhandbuch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #2a3f6f;
+    --gold: #C9A84C;
+    --gold-light: #dfc070;
+    --white: #ffffff;
+    --gray-50: #f8f9fb;
+    --gray-100: #eef0f5;
+    --gray-200: #d4d9e4;
+    --gray-600: #5a6380;
+    --gray-800: #2e3548;
+    --green: #1a6b52;
+    --orange: #c47b2a;
+    --purple: #7b5fa8;
+    --text: #1a2035;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', system-ui, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--gray-50);
+  }
+
+  /* ── PRINT BUTTON (screen only) ─────────────────────────── */
+  #print-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 28px;
+    padding: 14px 28px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    z-index: 999;
+    letter-spacing: .3px;
+  }
+  #print-btn:hover { background: var(--gold-light); }
+
+  /* ── PAGE LAYOUT ─────────────────────────────────────────── */
+  .page-wrap {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── COVER PAGE ──────────────────────────────────────────── */
+  .cover {
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 380px; height: 380px;
+    border: 2px solid rgba(201,168,76,.15);
+    border-radius: 50%;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; left: -60px;
+    width: 500px; height: 500px;
+    border: 2px solid rgba(201,168,76,.08);
+    border-radius: 50%;
+  }
+  .cover-diamond {
+    width: 64px; height: 64px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    margin-bottom: 40px;
+    flex-shrink: 0;
+  }
+  .cover-tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .cover-sub {
+    font-size: 20px;
+    color: rgba(255,255,255,.7);
+    font-weight: 300;
+    margin-bottom: 48px;
+  }
+  .cover-meta {
+    border-top: 1px solid rgba(201,168,76,.3);
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    font-size: 10px;
+    color: rgba(255,255,255,.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .cover-meta strong {
+    display: block;
+    color: rgba(255,255,255,.8);
+    font-size: 12px;
+    margin-bottom: 2px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* ── SECTIONS ────────────────────────────────────────────── */
+  section {
+    background: var(--white);
+    margin: 2px 0;
+    padding: 48px 40px;
+  }
+  section:first-of-type { margin-top: 0; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--gold);
+    display: inline-block;
+  }
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 28px 0 10px;
+  }
+  h3:first-child { margin-top: 0; }
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── NUMBERED STEPS ──────────────────────────────────────── */
+  .steps { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 14px;
+  }
+  .steps li::before {
+    content: counter(step);
+    width: 36px; height: 36px;
+    background: var(--navy);
+    color: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .steps li .step-text strong {
+    display: block;
+    color: var(--navy);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  /* ── BULLET LIST ─────────────────────────────────────────── */
+  ul.bullets { list-style: none; padding: 0; }
+  ul.bullets li {
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  ul.bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 9px;
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+
+  /* ── TAB CARDS ───────────────────────────────────────────── */
+  .tab-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .tab-card {
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--gray-50);
+  }
+  .tab-card .tab-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .tab-card strong {
+    display: block;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .tab-card p {
+    font-size: 11px;
+    color: var(--gray-600);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ── FRAMEWORK TABLE ─────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    margin-top: 16px;
+  }
+  thead tr {
+    background: var(--navy);
+    color: var(--white);
+  }
+  thead th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: .5px;
+  }
+  tbody tr:nth-child(even) { background: var(--gray-50); }
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+  tbody td:first-child { font-weight: 600; color: var(--navy); }
+
+  /* ── CATEGORY BADGES ─────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+  }
+  .badge-competitive { background: #e8ecf5; color: var(--navy); }
+  .badge-resource    { background: #e6f5ef; color: var(--green); }
+  .badge-execution   { background: #fef3e6; color: var(--orange); }
+  .badge-innovation  { background: #f1ecf9; color: var(--purple); }
+
+  /* ── WORKFLOW STEPS ──────────────────────────────────────── */
+  .workflow-row {
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .workflow-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .workflow-header strong { font-size: 13px; }
+  .workflow-header span {
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .workflow-steps-list {
+    display: flex;
+    padding: 12px 16px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .wstep {
+    background: var(--gray-100);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .wstep-num {
+    width: 18px; height: 18px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── EDGE LEGEND ─────────────────────────────────────────── */
+  .edge-legend {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .edge-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .edge-line {
+    width: 32px;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .edge-item p { font-size: 11px; margin: 0; }
+  .edge-item strong { display: block; font-size: 12px; color: var(--navy); }
+
+  /* ── TIP BOX ─────────────────────────────────────────────── */
+  .tip-box {
+    background: linear-gradient(135deg, #f0f4fd, #e8ecf5);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+  }
+  .tip-box .tip-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .tip-box p { font-size: 11px; margin: 0; color: var(--navy); }
+
+  /* ── CALLOUT ─────────────────────────────────────────────── */
+  .callout {
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .callout strong { color: var(--gold); display: block; margin-bottom: 6px; font-size: 14px; }
+  .callout p { font-size: 11px; color: rgba(255,255,255,.8); margin: 0; }
+
+  /* ── ICON EXPLANATIONS ───────────────────────────────────── */
+  .icon-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .icon-row:last-child { border-bottom: none; }
+  .icon-circle {
+    width: 38px; height: 38px;
+    background: var(--navy);
+    color: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .icon-row p { font-size: 11px; margin: 4px 0 0; color: var(--gray-600); }
+  .icon-row strong { font-size: 13px; color: var(--navy); }
+
+  /* ── FOOTER BAR ──────────────────────────────────────────── */
+  .doc-footer {
+    background: var(--navy);
+    color: rgba(255,255,255,.5);
+    text-align: center;
+    font-size: 10px;
+    padding: 20px;
+    margin-top: 2px;
+  }
+  .doc-footer span { color: var(--gold); }
+
+  /* ── TOC ─────────────────────────────────────────────────── */
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--gray-100);
+    border-right: 1px solid var(--gray-100);
+  }
+  .toc-item:nth-child(even) { border-right: none; }
+  .toc-item:nth-last-child(-n+2) { border-bottom: none; }
+  .toc-num {
+    width: 26px; height: 26px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .toc-item strong { display: block; font-size: 12px; color: var(--navy); }
+  .toc-item span { font-size: 10px; color: var(--gray-600); }
+
+  /* ── PRINT STYLES ────────────────────────────────────────── */
+  @media print {
+    @page {
+      size: A4;
+      margin: 15mm 18mm;
+    }
+    @page :first { margin: 0; }
+
+    body { background: white; font-size: 9.5pt; }
+    #print-btn { display: none; }
+
+    .cover {
+      min-height: 100vh;
+      page-break-after: always;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    section {
+      page-break-inside: avoid;
+      padding: 32px 0;
+      border-top: 1px solid var(--gray-200);
+    }
+    section:first-of-type { border-top: none; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 14px; }
+
+    .tab-grid { grid-template-columns: repeat(2, 1fr); }
+    .edge-legend { grid-template-columns: repeat(2, 1fr); }
+    .toc-grid { grid-template-columns: 1fr 1fr; }
+
+    table { page-break-inside: auto; }
+    tr { page-break-inside: avoid; }
+    thead { display: table-header-group; }
+
+    .workflow-row { page-break-inside: avoid; }
+    .callout { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cover::before, .cover::after { display: none; }
+
+    .doc-footer {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+
+<button id="print-btn" onclick="window.print()">Als PDF speichern ↓</button>
+
+<!-- ═══════════════════════════════════════════
+     COVER
+══════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="page-wrap">
+    <div class="cover-diamond"></div>
+    <div class="cover-tag">PPI AG · Management Consulting</div>
+    <h1>PPI Strategy<br>Navigator</h1>
+    <div class="cover-sub">Benutzerhandbuch &amp; Anleitung</div>
+    <div class="cover-meta">
+      <div>
+        <strong>Version</strong>
+        1.0 · Juni 2026
+      </div>
+      <div>
+        <strong>Plattform</strong>
+        iOS · Android · Web
+      </div>
+      <div>
+        <strong>Typ</strong>
+        Progressive Web App (PWA)
+      </div>
+      <div>
+        <strong>Sprache</strong>
+        Offline-fähig · Kein Login
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     INHALTSVERZEICHNIS
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Übersicht</div>
+    <h2>Inhaltsverzeichnis</h2>
+    <div class="toc-grid">
+      <div class="toc-item">
+        <div class="toc-num">1</div>
+        <div><strong>Schnellstart</strong><span>Installation &amp; erster Start</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">2</div>
+        <div><strong>Navigation</strong><span>Die vier Haupt-Tabs</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">3</div>
+        <div><strong>Framework Library</strong><span>9 Strategy Frameworks</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">4</div>
+        <div><strong>Framework-Detail</strong><span>Vollständige Analyse</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">5</div>
+        <div><strong>Guided Workflow</strong><span>6 vordefinierte Sequenzen</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">6</div>
+        <div><strong>Framework Network</strong><span>Visuelle Beziehungskarte</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">7</div>
+        <div><strong>My Analysis</strong><span>Aktive Frameworks &amp; Export</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">8</div>
+        <div><strong>Tooltips &amp; Hilfe</strong><span>Kontexthilfe im Detail</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">9</div>
+        <div><strong>Framework-Übersicht</strong><span>Alle 9 Frameworks</span></div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-num">10</div>
+        <div><strong>Workflow-Übersicht</strong><span>Alle 6 Workflows</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     1. SCHNELLSTART
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 1</div>
+    <h2>Schnellstart</h2>
+
+    <h3>App auf dem iPhone installieren</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-text">
+          <strong>Safari öffnen</strong>
+          Navigieren Sie in Safari zu <em>platvoet.org/strategy-navigator/</em>
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Teilen-Symbol antippen</strong>
+          Tippen Sie auf das <strong>Teilen-Symbol</strong> (Quadrat mit Pfeil nach oben) in der unteren Safari-Leiste.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>„Zum Home-Bildschirm"</strong>
+          Wählen Sie <strong>„Zum Home-Bildschirm hinzufügen"</strong> aus dem Menü.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Namen bestätigen</strong>
+          Lassen Sie den Namen „PPI Strategy Navigator" und tippen Sie rechts oben auf <strong>„Hinzufügen"</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>App starten</strong>
+          Die App erscheint als Icon auf Ihrem Home-Bildschirm und öffnet sich im Vollbild-Modus – wie eine native App.
+        </div>
+      </li>
+    </ol>
+
+    <div class="tip-box">
+      <div class="tip-label">Hinweis</div>
+      <p>Nach dem ersten Laden arbeitet die App vollständig <strong>offline</strong>. Alle Ihre Notizen und aktiven Frameworks werden lokal auf Ihrem Gerät gespeichert – kein Account, kein Cloud-Sync erforderlich.</p>
+    </div>
+
+    <h3>Android &amp; Desktop</h3>
+    <ul class="bullets">
+      <li><strong>Android (Chrome):</strong> Adressleiste → drei Punkte → „App installieren" oder „Zum Startbildschirm hinzufügen"</li>
+      <li><strong>Desktop (Chrome/Edge):</strong> Adressleiste → Install-Icon (⊕) rechts → „Installieren"</li>
+      <li><strong>Desktop (Safari/Firefox):</strong> Direkt im Browser verwenden – alle Funktionen sind verfügbar</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Datenschutz &amp; Datensicherung</strong>
+      <p>Alle Daten (Notizen, aktive Frameworks) liegen ausschließlich im localStorage Ihres Browsers. Sie verlassen Ihr Gerät zu keinem Zeitpunkt. Bitte beachten: Das Löschen des Browser-Caches oder der App-Daten entfernt auch Ihre Notizen. Nutzen Sie die Export-Funktion für regelmäßige Sicherungen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     2. NAVIGATION
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 2</div>
+    <h2>Navigation</h2>
+
+    <p>Die App ist über eine <strong>Bottom Tab Bar</strong> mit vier Hauptbereichen navigierbar. Die aktive Sektion ist gold hervorgehoben.</p>
+
+    <div class="tab-grid">
+      <div class="tab-card">
+        <div class="tab-icon">▦</div>
+        <strong>Library</strong>
+        <p>Alle 9 Strategy Frameworks im 3×3-Grid. Tippen für Details, lang drücken für Vorschau.</p>
+      </div>
+      <div class="tab-card">
+        <div class="tab-icon">▶</div>
+        <strong>Workflow</strong>
+        <p>6 vordefinierte Framework-Sequenzen für häufige Beratungsszenarien.</p>
+      </div>
+      <div class="tab-card">
+        <div class="tab-icon">◎</div>
+        <strong>Network</strong>
+        <p>Interaktive SVG-Visualisierung aller Framework-Beziehungen.</p>
+      </div>
+      <div class="tab-card">
+        <div class="tab-icon">★</div>
+        <strong>Analysis</strong>
+        <p>Aktive Frameworks gesammelt anzeigen, vergleichen und exportieren.</p>
+      </div>
+    </div>
+
+    <h3>Overlays &amp; Zurück-Navigation</h3>
+    <ul class="bullets">
+      <li>Der <strong>Detail-Screen</strong> (Framework-Details) schiebt von rechts herein und wird mit dem <strong>←-Button</strong> oben links geschlossen.</li>
+      <li>Der <strong>Workflow-Stepper</strong> schiebt ebenfalls von rechts und wird mit <strong>„Close"</strong> oben rechts geschlossen.</li>
+      <li>Das <strong>Network Info Panel</strong> schiebt von unten. Tippen auf den Hintergrund schließt es.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     3. FRAMEWORK LIBRARY
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 3</div>
+    <h2>Framework Library</h2>
+
+    <p>Die Library zeigt alle <strong>9 Strategy Frameworks</strong> als Karten im 3×3-Grid. Jede Karte zeigt Name, Kurzbeschreibung und Kategorie-Badge.</p>
+
+    <h3>Kategorien</h3>
+    <ul class="bullets">
+      <li><span class="badge badge-competitive">Competitive</span> &nbsp;Analyse externer Marktkräfte (dunkelblau)</li>
+      <li><span class="badge badge-resource">Resource</span> &nbsp;Bewertung interner Fähigkeiten (grün)</li>
+      <li><span class="badge badge-execution">Execution</span> &nbsp;Strategische Umsetzung &amp; Alignment (orange)</li>
+      <li><span class="badge badge-innovation">Innovation</span> &nbsp;Neue Marktchancen erkunden (lila)</li>
+    </ul>
+
+    <h3>Interaktionen</h3>
+    <div class="icon-row">
+      <div class="icon-circle">↗</div>
+      <div>
+        <strong>Tippen</strong>
+        <p>Öffnet den vollständigen Detail-Screen des Frameworks mit allen Informationen, Leitfragen und Notiz-Bereich.</p>
+      </div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-circle">…</div>
+      <div>
+        <strong>Lang drücken (0,5 Sek.)</strong>
+        <p>Öffnet eine kompakte Vorschau-Karte mit Kurzbeschreibung, Kategorie und direktem „Open"-Button. Nützlich für schnellen Vergleich.</p>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-label">Profi-Tipp</div>
+      <p>Frameworks mit aktivem ★-Status erscheinen auf der Karte mit einem goldenen Stern-Indikator. So sehen Sie auf einen Blick, welche Frameworks bereits in Ihrer aktuellen Analyse enthalten sind.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     4. FRAMEWORK DETAIL
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 4</div>
+    <h2>Framework-Detail Screen</h2>
+
+    <p>Der Detail-Screen liefert alle relevanten Informationen für den Einsatz im Projekt – strukturiert in fünf Bereiche.</p>
+
+    <h3>1. Meta-Informationen</h3>
+    <p>Direkt unter dem Framework-Namen finden Sie drei Pill-Elemente mit <strong>ⓘ-Buttons</strong> für Kontext-Tooltips:</p>
+    <ul class="bullets">
+      <li><strong>Autor &amp; Jahr</strong> – Wer hat das Framework entwickelt und wann?</li>
+      <li><strong>Aufwandsstufe</strong> – Quick (2–4 Stunden), Medium (1–2 Tage) oder Deep (3–5 Tage)</li>
+      <li><strong>Output-Typ</strong> – Welche Art von Ergebnis liefert das Framework?</li>
+    </ul>
+
+    <h3>2. Application Guide</h3>
+    <p>Der wichtigste Abschnitt für Consultants:</p>
+    <ul class="bullets">
+      <li><strong>When to use</strong> – Typische Einsatzsituationen und Projektkontexte</li>
+      <li><strong>When not to use</strong> – Situationen, in denen das Framework ungeeignet ist</li>
+      <li><strong>Common Pitfalls</strong> – 3 häufige Fehler und wie man sie vermeidet</li>
+    </ul>
+
+    <h3>3. Key Questions</h3>
+    <p>4–5 zentrale Leitfragen, die strukturiert durch die Analyse führen. Ideal als Workshop-Agenda oder Interview-Guide.</p>
+
+    <h3>4. Related Frameworks</h3>
+    <p>Tippbare Karten mit direkten Verbindungen zu anderen Frameworks. Jede Karte zeigt den <strong>Beziehungstyp</strong> (mit ⓘ) und einen erklärenden Text:</p>
+    <ul class="bullets">
+      <li><strong>Leads to</strong> – Output dieses Frameworks ist direkter Input des anderen</li>
+      <li><strong>Pair with</strong> – Beide häufig in derselben Analyse kombiniert</li>
+      <li><strong>Validates</strong> – Zum Gegenprüfen oder Stresstest der Ergebnisse</li>
+      <li><strong>Contrasts</strong> – Bieten gegensätzliche Perspektiven auf dieselbe Frage</li>
+    </ul>
+
+    <h3>5. Active Toggle &amp; Notizen</h3>
+    <div class="icon-row">
+      <div class="icon-circle">★</div>
+      <div>
+        <strong>Active Toggle</strong>
+        <p>Pins das Framework in den Analysis-Tab. Tippen Sie auf „Add to My Analysis" / „Remove from Analysis" (mit ⓘ-Tooltip zur Erklärung).</p>
+      </div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-circle">✏</div>
+      <div>
+        <strong>Notizen</strong>
+        <p>Das Textfeld unten speichert automatisch nach 400ms. Keine Speichern-Schaltfläche nötig. Notizen sind projektgebunden und erscheinen beim Export.</p>
+      </div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-circle">↗</div>
+      <div>
+        <strong>Export</strong>
+        <p>„Export This Framework" teilt Name + Notizen via iOS Share Sheet (oder kopiert in die Zwischenablage).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     5. GUIDED WORKFLOW
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 5</div>
+    <h2>Guided Workflow</h2>
+
+    <p>Der Workflow-Tab bietet <strong>6 vordefinierte Analyse-Sequenzen</strong> für die häufigsten Beratungsszenarien. Jede Sequenz führt Schritt für Schritt durch die optimale Framework-Reihenfolge.</p>
+
+    <h3>Workflow auswählen</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-text">
+          <strong>Workflow-Tab öffnen</strong>
+          Tippen Sie auf das ▶-Icon in der Tab-Leiste.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Szenario wählen</strong>
+          Tippen Sie auf eine der 6 Workflow-Karten. Die goldenen Segmente am unteren Rand zeigen Ihren Fortschritt (Schritte mit Notizen).
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Schritt-für-Schritt arbeiten</strong>
+          Jeder Schritt zeigt: benötigte Inputs, erwartete Outputs und einen grünen Fortschrittskreis sobald Notizen vorhanden.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Framework öffnen</strong>
+          „Open Framework" direkt aus dem Workflow-Stepper. Nach dem Schließen des Details kehren Sie zum Workflow zurück.
+        </div>
+      </li>
+    </ol>
+
+    <div class="tip-box">
+      <div class="tip-label">Fortschritts-Tracking</div>
+      <p>Der Workflow-Stepper erkennt automatisch, für welche Schritte bereits Notizen vorhanden sind. Ein <strong>grüner Kreis</strong> neben dem Schritt-Namen signalisiert, dass dieser Schritt bearbeitet wurde.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     6. FRAMEWORK NETWORK
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 6</div>
+    <h2>Framework Network</h2>
+
+    <p>Der Network-Tab zeigt alle 9 Frameworks und ihre <strong>16 Beziehungen</strong> als interaktives SVG-Diagramm. Wardley Mapping steht im Zentrum, die übrigen Frameworks sind kreisförmig angeordnet.</p>
+
+    <h3>Kanten-Typen</h3>
+    <div class="edge-legend">
+      <div class="edge-item">
+        <div class="edge-line" style="background:#1a6b52"></div>
+        <div>
+          <strong>Leads to</strong>
+          <p>Output ist direkter Input (PRECEDES)</p>
+        </div>
+      </div>
+      <div class="edge-item">
+        <div class="edge-line" style="background:#1B5296"></div>
+        <div>
+          <strong>Pair with</strong>
+          <p>Gut kombinierbar (COMBINES)</p>
+        </div>
+      </div>
+      <div class="edge-item">
+        <div class="edge-line" style="background:#7b5fa8"></div>
+        <div>
+          <strong>Validates</strong>
+          <p>Zum Gegenchecken (VALIDATES)</p>
+        </div>
+      </div>
+      <div class="edge-item">
+        <div class="edge-line" style="background:#c47b2a"></div>
+        <div>
+          <strong>Contrasts</strong>
+          <p>Gegensätzliche Perspektive (CONTRASTS)</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Interaktionen</h3>
+    <div class="icon-row">
+      <div class="icon-circle">◉</div>
+      <div>
+        <strong>Framework-Knoten antippen</strong>
+        <p>Verbundene Frameworks bleiben vollständig sichtbar, nicht verbundene werden auf 20% Transparenz gedimmt. Die Verbindungslinien leuchten auf. Ein Info-Panel schiebt von unten herein.</p>
+      </div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-circle">─</div>
+      <div>
+        <strong>Kante antippen</strong>
+        <p>Zeigt einen Tooltip mit dem Beziehungstyp und einer kurzen Erklärung an genau dieser Stelle.</p>
+      </div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-circle">↗</div>
+      <div>
+        <strong>„Open Framework"</strong>
+        <p>Öffnet direkt den Detail-Screen aus dem Network-Info-Panel heraus.</p>
+      </div>
+    </div>
+    <div class="icon-row">
+      <div class="icon-circle">✕</div>
+      <div>
+        <strong>Hintergrund antippen</strong>
+        <p>Setzt die Visualisierung zurück – alle Knoten wieder vollständig sichtbar, Info-Panel geschlossen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     7. MY ANALYSIS
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 7</div>
+    <h2>My Analysis</h2>
+
+    <p>Der Analysis-Tab aggregiert alle als <strong>aktiv markierten Frameworks</strong> an einem Ort. Er ist Ihr Arbeitsbereich für laufende Projektanalysen.</p>
+
+    <h3>Frameworks aktivieren</h3>
+    <p>Öffnen Sie einen Framework-Detail-Screen und tippen Sie auf <strong>„Add to My Analysis"</strong>. Das Framework erscheint sofort im Analysis-Tab mit allen bisher erfassten Notizen.</p>
+
+    <h3>Gesamt-Export</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-text">
+          <strong>Analysis-Tab öffnen</strong>
+          Tippen Sie auf das ★-Icon in der Tab-Leiste.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>„Export All"</strong>
+          Tippen Sie auf „Export All" oben rechts.
+        </div>
+      </li>
+      <li>
+        <div class="step-text">
+          <strong>Teilen oder kopieren</strong>
+          Auf iOS öffnet sich das native Share Sheet (WhatsApp, Mail, Notizen etc.). Auf anderen Geräten wird der Text in die Zwischenablage kopiert.
+        </div>
+      </li>
+    </ol>
+
+    <h3>Export-Format</h3>
+    <div class="callout">
+      <strong>Beispiel-Export</strong>
+      <p>PPI Strategy Navigator – Export 06.06.2026<br><br>
+      Porter's Five Forces ★ Active<br>
+      Supplier-Konzentration ist hoch. Drei Hauptlieferanten kontrollieren 70% des Marktes ...<br>
+      ---<br><br>
+      SWOT Analysis ★ Active<br>
+      Stärken: Starke Marktposition in DE/AT/CH ...<br>
+      ---</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     8. TOOLTIPS & HILFE
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 8</div>
+    <h2>Tooltips &amp; Kontexthilfe</h2>
+
+    <p>Die App bietet an drei Stellen kontextuelle Hilfe ohne den Workflow zu unterbrechen.</p>
+
+    <h3>ⓘ Inline-Tooltips</h3>
+    <p>Kleine <strong>ⓘ</strong>-Buttons erscheinen neben Fachbegriffen im Detail-Screen:</p>
+    <ul class="bullets">
+      <li>Neben Kategorien (Competitive, Resource, etc.)</li>
+      <li>Neben Beziehungstypen (Leads to, Pair with, etc.)</li>
+      <li>Neben der Aufwandsstufe (Quick / Medium / Deep)</li>
+      <li>Neben dem Active Toggle</li>
+    </ul>
+    <p>Antippen öffnet eine Erklärungsblase. Diese schließt automatisch nach 3 Sekunden oder beim Tippen auf den Hintergrund.</p>
+
+    <h3>Kanten-Tooltips im Network</h3>
+    <p>Tippen Sie direkt auf eine Verbindungslinie im Network-Tab. Ein Tooltip erscheint an genau dieser Position und erklärt den Beziehungstyp. Verschwindet nach 4 Sekunden.</p>
+
+    <h3>Long-Press Vorschau</h3>
+    <p>Halten Sie eine Framework-Karte in der Library <strong>0,5 Sekunden lang</strong> gedrückt. Eine Vorschau-Karte erscheint mit Kurzbeschreibung, Kategorie und „Open"-Button – ideal zum schnellen Vergleich ohne Navigation.</p>
+
+    <div class="tip-box">
+      <div class="tip-label">Tipp</div>
+      <p>Alle Tooltips können auch durch Tippen auf eine andere Stelle geschlossen werden. Sie blockieren nie die Hauptnavigation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     9. FRAMEWORK-ÜBERSICHT
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 9</div>
+    <h2>Alle 9 Strategy Frameworks</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Framework</th>
+          <th>Kategorie</th>
+          <th>Aufwand</th>
+          <th>Output</th>
+          <th>Typische Projekte</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Porter's Five Forces</td>
+          <td><span class="badge badge-competitive">Competitive</span></td>
+          <td>Medium</td>
+          <td>Fünf-Achsen-Matrix</td>
+          <td>Markteintritt, Wettbewerbsstrategie</td>
+        </tr>
+        <tr>
+          <td>VRIO Analysis</td>
+          <td><span class="badge badge-resource">Resource</span></td>
+          <td>Medium</td>
+          <td>VRIO-Raster</td>
+          <td>Due Diligence, Org-Design</td>
+        </tr>
+        <tr>
+          <td>Balanced Scorecard</td>
+          <td><span class="badge badge-execution">Execution</span></td>
+          <td>Deep</td>
+          <td>Vier-Perspektiven-BSC</td>
+          <td>Strategie-Implementierung, OKR-Setup</td>
+        </tr>
+        <tr>
+          <td>Wardley Mapping</td>
+          <td><span class="badge badge-innovation">Innovation</span></td>
+          <td>Deep</td>
+          <td>Entwicklungskarte</td>
+          <td>Technologiestrategie, Build-vs-Buy</td>
+        </tr>
+        <tr>
+          <td>Business Model Canvas</td>
+          <td><span class="badge badge-innovation">Innovation</span></td>
+          <td>Quick</td>
+          <td>BMC-Poster</td>
+          <td>Geschäftsmodell-Analyse, Startups</td>
+        </tr>
+        <tr>
+          <td>McKinsey 7-S</td>
+          <td><span class="badge badge-execution">Execution</span></td>
+          <td>Deep</td>
+          <td>7-S-Alignment-Map</td>
+          <td>M&amp;A, Transformation, Reorganisation</td>
+        </tr>
+        <tr>
+          <td>SWOT Analysis</td>
+          <td><span class="badge badge-competitive">Competitive</span></td>
+          <td>Quick</td>
+          <td>2×2-Matrix</td>
+          <td>Strategie-Initiierung, Situationsanalyse</td>
+        </tr>
+        <tr>
+          <td>Ansoff Matrix</td>
+          <td><span class="badge badge-innovation">Innovation</span></td>
+          <td>Quick</td>
+          <td>2×2-Wachstumsmatrix</td>
+          <td>Wachstumsstrategie, Portfolio-Entscheidungen</td>
+        </tr>
+        <tr>
+          <td>Blue Ocean Strategy</td>
+          <td><span class="badge badge-innovation">Innovation</span></td>
+          <td>Medium</td>
+          <td>Strategy Canvas + ERRC</td>
+          <td>Innovation, neue Märkte, Differenzierung</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Aufwandsstufen</h3>
+    <ul class="bullets">
+      <li><strong>Quick</strong> – 2–4 Stunden Desk Research oder ein fokussierter Workshop</li>
+      <li><strong>Medium</strong> – 1–2 Tage strukturierte Analyse und Stakeholder-Input</li>
+      <li><strong>Deep</strong> – 3–5 Tage Interviews, Datenerhebung und Iteration</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     10. WORKFLOW-ÜBERSICHT
+══════════════════════════════════════════════ -->
+<section>
+  <div class="page-wrap">
+    <div class="section-label">Kapitel 10</div>
+    <h2>Alle 6 Guided Workflows</h2>
+
+    <div class="workflow-row">
+      <div class="workflow-header">
+        <strong>Market Entry</strong>
+        <span>2–3 Tage</span>
+      </div>
+      <div class="workflow-steps-list">
+        <div class="wstep"><div class="wstep-num">1</div>Porter's Five Forces</div>
+        <div class="wstep"><div class="wstep-num">2</div>SWOT Analysis</div>
+        <div class="wstep"><div class="wstep-num">3</div>Ansoff Matrix</div>
+        <div class="wstep"><div class="wstep-num">4</div>Business Model Canvas</div>
+      </div>
+    </div>
+
+    <div class="workflow-row">
+      <div class="workflow-header">
+        <strong>Competitive Strategy</strong>
+        <span>2–4 Tage</span>
+      </div>
+      <div class="workflow-steps-list">
+        <div class="wstep"><div class="wstep-num">1</div>Porter's Five Forces</div>
+        <div class="wstep"><div class="wstep-num">2</div>SWOT Analysis</div>
+        <div class="wstep"><div class="wstep-num">3</div>VRIO Analysis</div>
+        <div class="wstep"><div class="wstep-num">4</div>Blue Ocean Strategy</div>
+      </div>
+    </div>
+
+    <div class="workflow-row">
+      <div class="workflow-header">
+        <strong>Organizational Transformation</strong>
+        <span>3–5 Tage</span>
+      </div>
+      <div class="workflow-steps-list">
+        <div class="wstep"><div class="wstep-num">1</div>McKinsey 7-S</div>
+        <div class="wstep"><div class="wstep-num">2</div>VRIO Analysis</div>
+        <div class="wstep"><div class="wstep-num">3</div>Balanced Scorecard</div>
+      </div>
+    </div>
+
+    <div class="workflow-row">
+      <div class="workflow-header">
+        <strong>M&amp;A Integration</strong>
+        <span>4–6 Tage</span>
+      </div>
+      <div class="workflow-steps-list">
+        <div class="wstep"><div class="wstep-num">1</div>Porter's Five Forces</div>
+        <div class="wstep"><div class="wstep-num">2</div>VRIO Analysis</div>
+        <div class="wstep"><div class="wstep-num">3</div>McKinsey 7-S</div>
+        <div class="wstep"><div class="wstep-num">4</div>Balanced Scorecard</div>
+      </div>
+    </div>
+
+    <div class="workflow-row">
+      <div class="workflow-header">
+        <strong>Business Model Innovation</strong>
+        <span>3–5 Tage</span>
+      </div>
+      <div class="workflow-steps-list">
+        <div class="wstep"><div class="wstep-num">1</div>Blue Ocean Strategy</div>
+        <div class="wstep"><div class="wstep-num">2</div>Business Model Canvas</div>
+        <div class="wstep"><div class="wstep-num">3</div>Wardley Mapping</div>
+      </div>
+    </div>
+
+    <div class="workflow-row">
+      <div class="workflow-header">
+        <strong>Technology Strategy</strong>
+        <span>3–4 Tage</span>
+      </div>
+      <div class="workflow-steps-list">
+        <div class="wstep"><div class="wstep-num">1</div>Wardley Mapping</div>
+        <div class="wstep"><div class="wstep-num">2</div>VRIO Analysis</div>
+        <div class="wstep"><div class="wstep-num">3</div>Business Model Canvas</div>
+        <div class="wstep"><div class="wstep-num">4</div>Balanced Scorecard</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-label">Workflow-Fortschritt</div>
+      <p>Die Fortschrittsleiste auf jeder Workflow-Karte zeigt goldene Segmente für jeden Schritt, zu dem bereits Notizen vorhanden sind. So sehen Sie auf einen Blick, wie weit Sie in jedem Szenario fortgeschritten sind.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<div class="doc-footer">
+  <span>PPI Strategy Navigator</span> &nbsp;·&nbsp; Benutzerhandbuch v1.0 &nbsp;·&nbsp; Juni 2026 &nbsp;·&nbsp; platvoet.org/strategy-navigator/
+</div>
+
+</body>
+</html>
