@@ -1079,6 +1079,154 @@
       justify-content: center;
     }
 
+    /* ── TOOLTIP BUBBLE ── */
+    #tip-bubble {
+      position: fixed;
+      background: var(--navy);
+      border-radius: 10px;
+      padding: 10px 13px;
+      max-width: 210px;
+      z-index: 1100;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px) scale(0.95);
+      transition: opacity 0.15s, transform 0.15s;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    }
+
+    #tip-bubble.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .tip-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .tip-text {
+      font-size: 12px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .tip-arrow {
+      position: absolute;
+      width: 0; height: 0;
+    }
+
+    .tip-arrow-down {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid var(--navy);
+      bottom: -6px;
+    }
+
+    .tip-arrow-up {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid var(--navy);
+      top: -6px;
+    }
+
+    .tip-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.55;
+      font-size: 11px;
+      padding: 0 0 0 3px;
+      vertical-align: middle;
+      line-height: 1;
+      display: inline;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── LONG-PRESS PREVIEW ── */
+    #lp-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 30, 53, 0.65);
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    #lp-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #lp-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      transform: scale(0.93);
+      transition: transform 0.2s;
+    }
+
+    #lp-overlay.visible #lp-card { transform: scale(1); }
+
+    .lp-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 8px 0 10px;
+    }
+
+    .lp-desc {
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+
+    .lp-q-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gray-500);
+      margin-bottom: 6px;
+    }
+
+    .lp-question {
+      font-size: 13px;
+      color: var(--navy);
+      font-style: italic;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      padding-left: 12px;
+      border-left: 3px solid var(--gold);
+    }
+
+    .lp-open {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 50px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lp-open:active { background: var(--navy-dark); }
+
     /* ── SCROLLBAR (desktop preview) ── */
     ::-webkit-scrollbar { width: 0; }
   </style>
@@ -1199,7 +1347,7 @@
       <div id="detail-related" class="related-section"></div>
       <div class="toggle-row" id="active-toggle-row">
         <div>
-          <div class="toggle-label">Mark as Active</div>
+          <div class="toggle-label">Mark as Active <button class="tip-btn" data-tip="active-toggle" onclick="event.stopPropagation();showTip(this)">ⓘ</button></div>
           <div class="toggle-sub">Adds to My Analysis</div>
         </div>
         <label class="toggle-switch">
@@ -1227,6 +1375,18 @@
       </button>
     </div>
   </div>
+</div>
+
+<!-- Tooltip Bubble (global, one instance) -->
+<div id="tip-bubble">
+  <div class="tip-title"></div>
+  <div class="tip-text"></div>
+  <div class="tip-arrow tip-arrow-down"></div>
+</div>
+
+<!-- Long-Press Preview Overlay -->
+<div id="lp-overlay" onclick="closeLongPress()">
+  <div id="lp-card" onclick="event.stopPropagation()"></div>
 </div>
 
 <!-- Network Node Info Panel -->
@@ -1698,6 +1858,132 @@ const EDGE_COLORS = {
   CONTRASTS: '#c47b2a'
 };
 
+// ── TOOLTIP SYSTEM ───────────────────────────────────────────────────────────
+const TIP_CONTENT = {
+  'cat-competitive': { title: 'Competitive',   text: 'Analyzes external market forces, competitive dynamics, and industry attractiveness.' },
+  'cat-resource':    { title: 'Resource',      text: 'Evaluates internal capabilities and resources as sources of competitive advantage.' },
+  'cat-execution':   { title: 'Execution',     text: 'Translates strategy into organizational alignment and measurable performance.' },
+  'cat-innovation':  { title: 'Innovation',    text: 'Explores new market opportunities, growth directions, and business model design.' },
+  'rel-PRECEDES':    { title: 'Leads to',      text: 'The output of this framework is the direct input for the linked one.' },
+  'rel-COMBINES':    { title: 'Pair with',     text: 'These two are commonly used together in the same engagement.' },
+  'rel-VALIDATES':   { title: 'Validates',     text: 'Use the linked framework to cross-check or stress-test your findings.' },
+  'rel-CONTRASTS':   { title: 'Contrasts',     text: 'These frameworks offer opposing perspectives on the same strategic question.' },
+  'time-quick':      { title: 'Quick apply',   text: 'Typically 2–4 hours of desk research or a focused workshop.' },
+  'time-medium':     { title: 'Medium effort', text: 'Typically 1–2 days of structured analysis and stakeholder input.' },
+  'time-deep':       { title: 'Deep dive',     text: 'Typically 3–5 days of interviews, data collection, and iteration.' },
+  'active-toggle':   { title: 'Mark as Active',text: 'Pins this framework to the Analysis tab for quick access and export.' }
+};
+
+let tipTimer = null;
+
+function showTip(btn) {
+  const content = TIP_CONTENT[btn.dataset.tip];
+  if (!content) return;
+  const bubble = document.getElementById('tip-bubble');
+  bubble.querySelector('.tip-title').textContent = content.title;
+  bubble.querySelector('.tip-text').textContent  = content.text;
+
+  bubble.style.visibility = 'hidden';
+  bubble.style.opacity = '0';
+  bubble.classList.add('visible');
+
+  const bRect  = btn.getBoundingClientRect();
+  const bW     = bubble.offsetWidth;
+  const bH     = bubble.offsetHeight;
+  const margin = 12;
+  const aboveSpace = bRect.top - bH - 12;
+  const useAbove   = aboveSpace > margin;
+
+  let top  = useAbove ? bRect.top - bH - 10 : bRect.bottom + 10;
+  let left = bRect.left + bRect.width / 2 - bW / 2;
+  left     = Math.max(margin, Math.min(left, window.innerWidth - bW - margin));
+
+  const arrow     = bubble.querySelector('.tip-arrow');
+  arrow.className = 'tip-arrow ' + (useAbove ? 'tip-arrow-down' : 'tip-arrow-up');
+  const arrowLeft = (bRect.left + bRect.width / 2) - left;
+  arrow.style.left = Math.max(10, Math.min(arrowLeft, bW - 10)) + 'px';
+
+  bubble.style.top  = top + 'px';
+  bubble.style.left = left + 'px';
+  bubble.style.visibility = '';
+
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(hideTip, 3000);
+}
+
+function showEdgeTip(e, edge) {
+  const fromF = FRAMEWORKS.find(x => x.id === edge.from);
+  const toF   = FRAMEWORKS.find(x => x.id === edge.to);
+  const note  = fromF.relations.find(r => r.id === edge.to)?.note
+              || toF.relations.find(r => r.id === edge.from)?.note || '';
+  const bubble = document.getElementById('tip-bubble');
+  bubble.querySelector('.tip-title').textContent = `${fromF.name} → ${toF.name}`;
+  bubble.querySelector('.tip-text').textContent  = `${REL_LABELS[edge.type]}: ${note}`;
+
+  const margin = 12, bW = 210;
+  const cx = e.clientX ?? window.innerWidth / 2;
+  const cy = e.clientY ?? 150;
+  let left = cx - bW / 2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - bW - margin));
+  const top = Math.max(margin, cy - 90);
+
+  const arrow = bubble.querySelector('.tip-arrow');
+  arrow.className = 'tip-arrow tip-arrow-down';
+  arrow.style.left = (cx - left) + 'px';
+
+  bubble.style.left = left + 'px';
+  bubble.style.top  = top + 'px';
+  bubble.classList.add('visible');
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(hideTip, 4000);
+}
+
+function hideTip() {
+  document.getElementById('tip-bubble').classList.remove('visible');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.tip-btn') && !e.target.closest('#tip-bubble')) hideTip();
+});
+
+// ── LONG-PRESS PREVIEW ────────────────────────────────────────────────────────
+let lpTimer = null;
+let lpFrameworkId = null;
+
+function attachLongPress() {
+  document.querySelectorAll('.framework-card[data-fid]').forEach(card => {
+    card.addEventListener('touchstart', () => {
+      lpTimer = setTimeout(() => showLongPress(card.dataset.fid), 500);
+    }, { passive: true });
+    card.addEventListener('touchend',  () => clearTimeout(lpTimer));
+    card.addEventListener('touchmove', () => clearTimeout(lpTimer));
+  });
+}
+
+function showLongPress(id) {
+  lpFrameworkId = id;
+  const f        = FRAMEWORKS.find(x => x.id === id);
+  const catClass = 'badge-' + f.category.toLowerCase();
+  document.getElementById('lp-card').innerHTML = `
+    <span class="card-badge ${catClass}" style="display:inline-block">${f.category}</span>
+    <div class="lp-name">${f.name}</div>
+    <div class="lp-desc">${f.shortDesc} ${f.description.split('.')[0]}.</div>
+    <div class="lp-q-label">Key question</div>
+    <div class="lp-question">${f.keyQuestions[0]}</div>
+    <button class="lp-open" onclick="openDetailFromPreview()">Open Framework</button>
+  `;
+  document.getElementById('lp-overlay').classList.add('visible');
+}
+
+function closeLongPress() {
+  document.getElementById('lp-overlay').classList.remove('visible');
+}
+
+function openDetailFromPreview() {
+  closeLongPress();
+  setTimeout(() => openDetail(lpFrameworkId), 180);
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentTab = 'library';
 let currentFrameworkId = null;
@@ -1729,12 +2015,13 @@ function renderLibrary() {
   grid.innerHTML = FRAMEWORKS.map(f => {
     const active = isActive(f.id);
     const catClass = 'badge-' + f.category.toLowerCase();
-    return `<div class="framework-card${active ? ' is-active' : ''}" onclick="openDetail('${f.id}')">
+    return `<div class="framework-card${active ? ' is-active' : ''}" data-fid="${f.id}" onclick="openDetail('${f.id}')">
       <span class="card-badge ${catClass}">${f.category}</span>
       <span class="card-name">${f.name}</span>
       <span class="card-desc">${f.shortDesc}</span>
     </div>`;
   }).join('');
+  attachLongPress();
 }
 
 // ── DETAIL SCREEN ─────────────────────────────────────────────────────────────
@@ -1749,7 +2036,7 @@ function openDetail(id) {
   document.getElementById('detail-title').textContent = f.name;
 
   const badge = document.getElementById('detail-category-badge');
-  badge.textContent = f.category;
+  badge.innerHTML = `${f.category} <button class="tip-btn" data-tip="cat-${f.category.toLowerCase()}" onclick="event.stopPropagation();showTip(this)">ⓘ</button>`;
   badge.className = 'detail-category ' + catClass;
 
   // Meta pills
@@ -1760,7 +2047,7 @@ function openDetail(id) {
       <span class="meta-pill-dot"></span>
       ${meta.origin.author}, ${meta.origin.year}
     </span>
-    <span class="meta-pill time-${meta.timeToApply}">${TIME_LABELS[meta.timeToApply]}</span>
+    <span class="meta-pill time-${meta.timeToApply}">${TIME_LABELS[meta.timeToApply]} <button class="tip-btn" data-tip="time-${meta.timeToApply}" onclick="event.stopPropagation();showTip(this)">ⓘ</button></span>
     <span class="meta-pill">
       <span class="meta-pill-label">Output</span>
       <span class="meta-pill-dot"></span>
@@ -1801,7 +2088,7 @@ function openDetail(id) {
       ${f.relations.map(r => {
         const rf = FRAMEWORKS.find(x => x.id === r.id);
         return `<div class="related-card" onclick="openDetail('${r.id}')">
-          <span class="rel-badge rel-${r.type}">${REL_LABELS[r.type]}</span>
+          <span class="rel-badge rel-${r.type}">${REL_LABELS[r.type]} <button class="tip-btn" data-tip="rel-${r.type}" onclick="event.stopPropagation();showTip(this)">ⓘ</button></span>
           <div class="related-card-body">
             <div class="related-card-name">${rf.name}</div>
             <div class="related-card-note">${r.note}</div>
@@ -1941,6 +2228,23 @@ function initNetwork() {
     eGroup.appendChild(line);
   });
   svg.appendChild(eGroup);
+
+  // Invisible wide overlay lines for edge tap detection
+  const tapGroup = el('g', { id: 'net-edge-taps' });
+  buildEdges().forEach(edge => {
+    const a = NET_POS[edge.from], b = NET_POS[edge.to];
+    if (!a || !b) return;
+    const dx = b.cx - a.cx, dy = b.cy - a.cy, d = Math.sqrt(dx*dx + dy*dy);
+    const ux = dx/d, uy = dy/d;
+    const tapLine = el('line', {
+      x1: a.cx + ux*R, y1: a.cy + uy*R,
+      x2: b.cx - ux*R, y2: b.cy - uy*R,
+      stroke: 'transparent', 'stroke-width': '14', cursor: 'pointer'
+    });
+    tapLine.addEventListener('click', e => { e.stopPropagation(); showEdgeTip(e, edge); });
+    tapGroup.appendChild(tapLine);
+  });
+  svg.appendChild(tapGroup);
 
   // Nodes
   const nGroup = el('g', { id: 'net-nodes' });
